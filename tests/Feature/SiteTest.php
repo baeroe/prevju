@@ -55,6 +55,15 @@ class SiteTest extends TestCase
         $this->get('/s/abc123/index.html')->assertOk();
     }
 
+    public function test_files_removed_from_list_are_deleted_from_disk(): void
+    {
+        $site = $this->makeSite();
+        $site->update(['files' => ['abc123/index.html']]);
+
+        $this->assertFileExists($site->dir().'/index.html');
+        $this->assertFileDoesNotExist($site->dir().'/css/style.css');
+    }
+
     public function test_zip_is_extracted_and_wrapping_folder_dropped(): void
     {
         $site = Site::create(['name' => 'Zip', 'slug' => 'abc123']);
@@ -72,7 +81,8 @@ class SiteTest extends TestCase
         $this->assertFileExists($site->dir().'/js/app.js');
         $this->assertFileDoesNotExist($site->dir().'/upload.zip');
         $this->assertFileDoesNotExist($site->dir().'/__MACOSX');
-        $this->assertSame([], $site->fresh()->files);
+        $this->assertSame(['abc123/index.html', 'abc123/js/app.js'], $site->fresh()->files);
+        $this->assertSame(['index.html', 'js/app.js'], $site->fileList()->all());
         $this->get('/s/abc123/index.html')->assertOk();
     }
 }

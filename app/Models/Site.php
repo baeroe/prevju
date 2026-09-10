@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -15,7 +16,10 @@ class Site extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn (Site $site) => $site->extractZips());
+        static::saved(function (Site $site) {
+            $site->extractZips();
+            $site->pruneRemovedFiles();
+        });
         static::deleting(fn (Site $site) => File::deleteDirectory($site->dir()));
     }
 
@@ -27,6 +31,17 @@ class Site extends Model
     public function url(): string
     {
         return url("/s/{$this->slug}").'/';
+    }
+
+    /** Relative paths of all files on disk, e.g. "css/style.css". */
+    public function fileList(): Collection
+    {
+        $dir = $this->dir();
+
+        return collect(is_dir($dir) ? File::allFiles($dir) : [])
+            ->map(fn ($f) => str_replace(DIRECTORY_SEPARATOR, '/', $f->getRelativePathname()))
+            ->sort()
+            ->values();
     }
 
     /** Unpack uploaded zips into the site dir, dropping a single wrapping folder if present. */
@@ -63,10 +78,23 @@ class Site extends Model
         }
 
         if ($extracted) {
-            $this->files = collect($this->files ?? [])->reject(fn ($f) => str_ends_with($f, '.zip'))->values()->all();
+            // keep the upload field in sync with what is really on disk, so single files can be removed there
+            $this->files = $this->fileList()->map(fn ($f) => "{$this->slug}/{$f}")->all();
             // direct update: inside the saved event the dirty check compares against stale originals
             $this->newQuery()->whereKey($this->getKey())->update(['files' => json_encode($this->files)]);
         }
+    }
+
+    /** Files removed in the upload field are only dropped from `files`; delete them from disk too. */
+    public function pruneRemovedFiles(): void
+    {
+        if ($this->files === null) {
+            return;
+        }
+
+        $keep = collect($this->files)->map(fn ($f) => substr($f, strlen($this->slug) + 1));
+
+        $this->fileList()->diff($keep)->each(fn ($f) => File::delete($this->dir().'/'.$f));
     }
 
     private static function commonFolder(array $names): string
