@@ -26,6 +26,9 @@ class SitesTable
                     ->copyable()
                     ->copyMessage('Link kopiert')
                     ->icon('heroicon-o-clipboard'),
+                TextColumn::make('file_count')
+                    ->label('Dateien')
+                    ->state(fn (Site $record) => $record->fileList()->count()),
                 IconColumn::make('password')
                     ->label('Passwort')
                     ->boolean()
