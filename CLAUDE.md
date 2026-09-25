@@ -17,7 +17,7 @@ Statische HTML-Entwürfe hochladen, Link an den Kunden schicken, optional mit Pa
 - Uploads liegen auf der Disk `sites` (`storage/app/sites/<slug>/`, siehe `config/filesystems.php`)
 - Vite + Tailwind 4 nur für Filament-Assets; das Kunden-Frontend ist reines Blade (eine View: `site-password`)
 - Tests: PHPUnit ^12.5, Formatierung: Laravel Pint
-- Betrieb: Docker-Image auf Basis `serversideup/php:8.4-fpm-nginx`, Port 8080, Daten im Volume `prevju-data`. HTTPS macht ein vorgeschalteter Reverse-Proxy.
+- Betrieb: Docker-Image auf Basis `serversideup/php:8.4-fpm-nginx`, Host-Port 7738 (im Container 8080), Daten im Volume `prevju-data`. HTTPS macht ein vorgeschalteter Reverse-Proxy.
 
 ## Kommandos
 

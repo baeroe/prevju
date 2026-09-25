@@ -3,10 +3,10 @@ services:
     image: ${PREVJU_IMAGE:-baeroe/prevju:latest}
     restart: unless-stopped
     ports:
-      - "${PREVJU_PORT:-8080}:8080"
+      - "${PREVJU_PORT:-7738}:8080"
     environment:
       APP_KEY: "${APP_KEY:-}"
-      APP_URL: "${APP_URL:-http://localhost:8080}"
+      APP_URL: "${APP_URL:-http://localhost:7738}"
       ADMIN_EMAIL: "${ADMIN_EMAIL:?ADMIN_EMAIL missing}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD missing}"
     volumes:

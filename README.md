@@ -1,5 +1,8 @@
 # prevju
 
+[![Tests](https://github.com/baeroe/prevju/actions/workflows/tests.yml/badge.svg)](https://github.com/baeroe/prevju/actions/workflows/tests.yml)
+[![Docker Hub](https://img.shields.io/docker/v/baeroe/prevju?sort=semver&label=docker%20hub)](https://hub.docker.com/r/baeroe/prevju)
+
 Upload HTML drafts, send the link to your client. Optionally password protected.
 
 ## Self-hosting (Docker Compose)
@@ -12,7 +15,7 @@ services:
     image: baeroe/prevju:latest
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "7738:8080"
     environment:
       APP_URL: "${APP_URL}"
       ADMIN_EMAIL: "${ADMIN_EMAIL}"
@@ -40,7 +43,7 @@ docker compose pull && docker compose up -d       # update
 - Admin: `<APP_URL>/admin` (log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`, the user is created on startup)
 - Client link: `<APP_URL>/s/<slug>/`
 - Data (SQLite, uploads, generated `APP_KEY`) lives in the `prevju-data` volume.
-- HTTPS via a reverse proxy (Caddy/Traefik) in front of port 8080.
+- HTTPS via a reverse proxy (Caddy/Traefik) in front of port 7738.
 - Pin a version instead of `latest`: `image: baeroe/prevju:1.0.0`
 
 ### Release
@@ -54,11 +57,3 @@ git tag v1.0.0 && git push origin v1.0.0
 ## Upload
 
 Single files (HTML, CSS, JS, images) or a ZIP with a folder structure. A single wrapper folder inside the ZIP is removed. Without an `index.html`, the first `.html` file is served.
-
-## Local development
-
-```bash
-composer install && php artisan migrate && php artisan make:filament-user
-php artisan serve   # http://localhost:8000/admin
-php artisan test
-```
