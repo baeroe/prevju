@@ -35,7 +35,7 @@ class AdminTest extends TestCase
         return $this->post("/sites/{$this->site->id}/files", [
             'file' => $file ?? UploadedFile::fake()->createWithContent(basename($path), $content),
             'path' => $path,
-        ]);
+        ], ['Accept' => 'application/json']); // like lib/upload.ts
     }
 
     public function test_guest_is_sent_to_login_and_can_log_in(): void
