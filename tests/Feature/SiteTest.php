@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Site;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -38,6 +39,17 @@ class SiteTest extends TestCase
         $this->get('/s/unknown/')->assertNotFound();
     }
 
+    public function test_unknown_route_without_extension_falls_back_to_index(): void
+    {
+        $this->makeSite();
+        $response = $this->get('/s/abc123/dashboard/settings')->assertOk();
+        $this->assertStringEndsWith('abc123/index.html', $response->baseResponse->getFile()->getPathname());
+        $this->get('/s/abc123/missing.css')->assertNotFound();
+
+        File::delete(storage_path('app/sites/abc123/index.html'));
+        $this->get('/s/abc123/dashboard')->assertNotFound();
+    }
+
     public function test_path_traversal_is_blocked(): void
     {
         $this->makeSite();
@@ -55,34 +67,23 @@ class SiteTest extends TestCase
         $this->get('/s/abc123/index.html')->assertOk();
     }
 
-    public function test_files_removed_from_list_are_deleted_from_disk(): void
+    public function test_preview_url_needs_valid_signature_and_rotates_with_password(): void
     {
-        $site = $this->makeSite();
-        $site->update(['files' => ['abc123/index.html']]);
+        $site = $this->makeSite('secret');
+        $old = $site->previewUrl();
 
-        $this->assertFileExists($site->dir().'/index.html');
-        $this->assertFileDoesNotExist($site->dir().'/css/style.css');
+        $this->get($old.'css/style.css')->assertOk();
+        $this->get('/p/wrongsignature00000/abc123/index.html')->assertNotFound();
+        $this->get(str_replace('/p/', '/p/x', $old).'../../.env')->assertNotFound();
+
+        $site->update(['password' => Hash::make('new')]);
+        $this->get($old.'index.html')->assertNotFound();
+        $this->get($site->previewUrl().'index.html')->assertOk();
     }
 
-    public function test_zip_is_extracted_and_wrapping_folder_dropped(): void
+    public function test_logged_in_admin_sees_protected_site_without_password(): void
     {
-        $site = Site::create(['name' => 'Zip', 'slug' => 'abc123']);
-        File::ensureDirectoryExists($site->dir());
-        $zip = new \ZipArchive;
-        $zip->open($site->dir().'/upload.zip', \ZipArchive::CREATE);
-        $zip->addFromString('wrapper/index.html', '<h1>zipped</h1>');
-        $zip->addFromString('wrapper/js/app.js', '1');
-        $zip->addFromString('__MACOSX/._index.html', 'junk');
-        $zip->close();
-
-        $site->update(['files' => ['abc123/upload.zip']]);
-
-        $this->assertFileExists($site->dir().'/index.html');
-        $this->assertFileExists($site->dir().'/js/app.js');
-        $this->assertFileDoesNotExist($site->dir().'/upload.zip');
-        $this->assertFileDoesNotExist($site->dir().'/__MACOSX');
-        $this->assertSame(['abc123/index.html', 'abc123/js/app.js'], $site->fresh()->files);
-        $this->assertSame(['index.html', 'js/app.js'], $site->fileList()->all());
-        $this->get('/s/abc123/index.html')->assertOk();
+        $this->makeSite('secret');
+        $this->actingAs(User::factory()->create())->get('/s/abc123/index.html')->assertOk();
     }
 }

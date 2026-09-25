@@ -10,3 +10,5 @@ storage/framework/sessions/*
 storage/framework/views/*
 database/*.sqlite
 tests
+public/build
+public/hot

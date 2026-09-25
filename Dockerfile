@@ -1,3 +1,11 @@
+FROM --platform=$BUILDPLATFORM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY vite.config.ts tsconfig.json ./
+COPY resources ./resources
+RUN npm run build
+
 FROM serversideup/php:8.4-fpm-nginx
 LABEL org.opencontainers.image.source=https://github.com/baeroe/prevju
 
@@ -21,7 +29,7 @@ USER root
 RUN install-php-extensions intl
 COPY --chmod=755 docker/entrypoint.d/ /etc/entrypoint.d/
 COPY --chown=www-data:www-data . /var/www/html
+COPY --chown=www-data:www-data --from=assets /app/public/build /var/www/html/public/build
 USER www-data
 
-RUN composer install --no-dev --no-interaction --optimize-autoloader \
-    && php artisan filament:assets
+RUN composer install --no-dev --no-interaction --optimize-autoloader
