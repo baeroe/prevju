@@ -14,12 +14,31 @@ class SiteController extends Controller
     {
         $site = Site::where('slug', $slug)->firstOrFail();
 
-        if ($site->password && ! $request->session()->get("site.{$site->id}")) {
+        // the logged-in admin opens protected sites without typing the password
+        if ($site->password && ! $request->user() && ! $request->session()->get("site.{$site->id}")) {
             return response()->view('site-password', ['site' => $site], 401);
         }
 
+        return $this->serve($request, $site, $path);
+    }
+
+    public function preview(Request $request, string $signature, string $slug, string $path = '')
+    {
+        $site = Site::where('slug', $slug)->firstOrFail();
+        abort_unless(hash_equals($site->previewSignature(), $signature), 404);
+
+        return $this->serve($request, $site, $path);
+    }
+
+    private function serve(Request $request, Site $site, string $path)
+    {
         $root = realpath($site->dir()) ?: abort(404);
-        $file = realpath($root.'/'.($path ?: '.')) ?: abort(404);
+        $file = realpath($root.'/'.($path ?: '.'));
+        // SPA fallback: unknown paths without extension (client-side routes) get the site's index
+        if (! $file && pathinfo($path, PATHINFO_EXTENSION) === '') {
+            $file = $this->indexOf($root);
+        }
+        $file ?: abort(404);
         abort_unless($file === $root || str_starts_with($file, $root.DIRECTORY_SEPARATOR), 404);
 
         if (is_dir($file)) {
