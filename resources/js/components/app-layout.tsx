@@ -18,6 +18,9 @@ export function AppLayout({ actions, children }: { actions?: React.ReactNode; ch
                     </Link>
                     <div className="flex items-center gap-2">
                         {actions}
+                        <Button variant="ghost" asChild>
+                            <Link href="/tokens">MCP</Link>
+                        </Button>
                         <Tooltip label="Abmelden">
                             <Button variant="ghost" size="icon" aria-label="Abmelden" onClick={() => router.post('/logout')}>
                                 <LogOut />
