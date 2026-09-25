@@ -5,22 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title>{{ $site->name }}</title>
-    <style>
-        body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: system-ui, sans-serif; background: #f4f4f5; color: #18181b; }
-        form { background: #fff; padding: 2rem; border-radius: .75rem; box-shadow: 0 1px 3px rgb(0 0 0 / .1); width: min(90vw, 20rem); }
-        h1 { font-size: 1.1rem; margin: 0 0 1rem; }
-        input, button { width: 100%; box-sizing: border-box; font: inherit; padding: .6rem .75rem; border-radius: .5rem; border: 1px solid #d4d4d8; }
-        button { margin-top: .75rem; background: #18181b; color: #fff; border-color: #18181b; cursor: pointer; }
-        .error { color: #b91c1c; font-size: .9rem; margin: .5rem 0 0; }
-    </style>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    @vite('resources/css/app.css')
 </head>
 <body>
-<form method="post" action="{{ route('site.unlock', $site->slug) }}">
-    @csrf
-    <h1>{{ $site->name }}</h1>
-    <input type="password" name="password" placeholder="Passwort" autofocus required>
-    @error('password') <p class="error">{{ $message }}</p> @enderror
-    <button type="submit">Öffnen</button>
-</form>
+<main class="grid min-h-dvh place-items-center px-10 py-16">
+    <form method="post" action="{{ route('site.unlock', $site->slug) }}" class="crop w-full max-w-sm border bg-sheet p-8">
+        <span class="crop-mark" aria-hidden="true"></span>
+        <span class="crop-mark" aria-hidden="true"></span>
+        <span class="crop-mark" aria-hidden="true"></span>
+        <span class="crop-mark" aria-hidden="true"></span>
+        @csrf
+        <p class="text-sm text-ink-muted">Entwurf zur Ansicht</p>
+        <h1 class="mt-1 text-2xl leading-tight font-semibold tracking-tight text-balance break-words">{{ $site->name }}</h1>
+        <div class="mt-8 grid gap-2">
+            <label for="password" class="text-sm font-medium">Passwort</label>
+            <input id="password" type="password" name="password" autocomplete="current-password" autofocus required
+                   @error('password') aria-invalid="true" aria-describedby="password-error" @enderror
+                   class="h-10 w-full border border-hairline bg-sheet px-3 text-base hover:border-ink-muted focus-visible:border-ink aria-invalid:border-danger md:text-sm">
+            @error('password') <p id="password-error" class="text-sm text-danger" role="alert">{{ $message }}</p> @enderror
+        </div>
+        <button type="submit" class="mt-6 h-10 w-full cursor-pointer bg-signal px-4 text-sm font-medium text-signal-ink hover:bg-ink hover:text-sheet">Entwurf öffnen</button>
+    </form>
+</main>
 </body>
 </html>

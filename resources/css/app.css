@@ -1,9 +1,106 @@
 @import 'tailwindcss';
+@import '@fontsource/instrument-sans/400.css';
+@import '@fontsource/instrument-sans/500.css';
+@import '@fontsource/instrument-sans/600.css';
+@import '@fontsource/jetbrains-mono/400.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+@source '../views';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Tokens: see DESIGN.md */
+:root {
+    --paper: oklch(0.968 0.003 95);
+    --sheet: oklch(0.993 0.002 95);
+    --ink: oklch(0.23 0.025 255);
+    --ink-muted: oklch(0.5 0.015 255);
+    --hairline: oklch(0.86 0.006 255);
+    --signal: oklch(0.7 0.19 45);
+    --signal-ink: oklch(0.23 0.025 255);
+    --danger: oklch(0.55 0.2 25);
+
+    --dur: 120ms;
+    --ease: steps(3, end);
+}
+
+@theme inline {
+    --color-paper: var(--paper);
+    --color-sheet: var(--sheet);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-hairline: var(--hairline);
+    --color-signal: var(--signal);
+    --color-signal-ink: var(--signal-ink);
+    --color-danger: var(--danger);
+
+    --font-sans: 'Instrument Sans', ui-sans-serif, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --radius-sm: 0;
+    --radius-md: 0;
+    --radius-lg: 0;
+}
+
+@layer base {
+    * {
+        border-color: var(--hairline);
+    }
+    html {
+        background: var(--paper);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+    }
+    body {
+        font-family: var(--font-sans);
+    }
+    html {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+    /* ink, not signal: orange on paper misses 3:1 for focus indicators */
+    :focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+    }
+    ::selection {
+        background: var(--signal);
+        color: var(--signal-ink);
+    }
+}
+
+/* Crop marks: four corner angles outside a framed box. Hover on a .group pushes them out. */
+.crop {
+    --crop-len: 12px;
+    --crop-gap: 6px;
+    --crop-color: var(--ink);
+    position: relative;
+}
+.crop > .crop-mark {
+    position: absolute;
+    width: var(--crop-len);
+    height: var(--crop-len);
+    pointer-events: none;
+    color: var(--crop-color); /* the per-corner border shorthands use currentColor */
+    transition:
+        translate var(--dur) var(--ease),
+        color var(--dur) var(--ease);
+}
+.crop > .crop-mark:nth-of-type(1) { top: calc(-1 * (var(--crop-len) + var(--crop-gap))); left: calc(-1 * (var(--crop-len) + var(--crop-gap))); border-right: 1px solid; border-bottom: 1px solid; }
+.crop > .crop-mark:nth-of-type(2) { top: calc(-1 * (var(--crop-len) + var(--crop-gap))); right: calc(-1 * (var(--crop-len) + var(--crop-gap))); border-left: 1px solid; border-bottom: 1px solid; }
+.crop > .crop-mark:nth-of-type(3) { bottom: calc(-1 * (var(--crop-len) + var(--crop-gap))); left: calc(-1 * (var(--crop-len) + var(--crop-gap))); border-right: 1px solid; border-top: 1px solid; }
+.crop > .crop-mark:nth-of-type(4) { bottom: calc(-1 * (var(--crop-len) + var(--crop-gap))); right: calc(-1 * (var(--crop-len) + var(--crop-gap))); border-left: 1px solid; border-top: 1px solid; }
+
+.group:hover .crop,
+.group:focus-within .crop {
+    --crop-color: var(--signal);
+}
+.group:hover .crop > .crop-mark:nth-of-type(1),
+.group:focus-within .crop > .crop-mark:nth-of-type(1) { translate: -3px -3px; }
+.group:hover .crop > .crop-mark:nth-of-type(2),
+.group:focus-within .crop > .crop-mark:nth-of-type(2) { translate: 3px -3px; }
+.group:hover .crop > .crop-mark:nth-of-type(3),
+.group:focus-within .crop > .crop-mark:nth-of-type(3) { translate: -3px 3px; }
+.group:hover .crop > .crop-mark:nth-of-type(4),
+.group:focus-within .crop > .crop-mark:nth-of-type(4) { translate: 3px 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .crop > .crop-mark { transition: none; translate: none !important; }
 }
