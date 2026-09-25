@@ -1,10 +1,10 @@
 # prevju
 
-HTML-Entwürfe hochladen, Link an den Kunden schicken. Optional mit Passwort.
+Upload HTML drafts, send the link to your client. Optionally password protected.
 
-## Self-Hosting (Docker Compose)
+## Self-hosting (Docker Compose)
 
-Kein Code nötig, nur zwei Dateien. `docker-compose.yml`:
+No code needed, just two files. `docker-compose.yml`:
 
 ```yaml
 services:
@@ -24,7 +24,7 @@ volumes:
   prevju-data:
 ```
 
-`.env` daneben:
+`.env` next to it:
 
 ```bash
 APP_URL=https://preview.example.com
@@ -33,19 +33,19 @@ ADMIN_PASSWORD=change-me
 ```
 
 ```bash
-docker compose up -d                              # starten
-docker compose pull && docker compose up -d       # updaten
+docker compose up -d                              # start
+docker compose pull && docker compose up -d       # update
 ```
 
-- Admin: `<APP_URL>/admin` (Login mit `ADMIN_EMAIL` / `ADMIN_PASSWORD`, User wird beim Start angelegt)
-- Kundenlink: `<APP_URL>/s/<slug>/`
-- Daten (SQLite, Uploads, generierter `APP_KEY`) liegen im Volume `prevju-data`.
-- HTTPS über vorgeschalteten Reverse-Proxy (Caddy/Traefik) auf Port 8080.
-- Feste Version statt `latest`: `image: baeroe/prevju:1.0.0`
+- Admin: `<APP_URL>/admin` (log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`, the user is created on startup)
+- Client link: `<APP_URL>/s/<slug>/`
+- Data (SQLite, uploads, generated `APP_KEY`) lives in the `prevju-data` volume.
+- HTTPS via a reverse proxy (Caddy/Traefik) in front of port 8080.
+- Pin a version instead of `latest`: `image: baeroe/prevju:1.0.0`
 
 ### Release
 
-Git-Tag pushen, GitHub Actions baut das Image für amd64 und arm64 und pusht es nach Docker Hub:
+Push a git tag, GitHub Actions builds the image for amd64 and arm64 and pushes it to Docker Hub:
 
 ```bash
 git tag v1.0.0 && git push origin v1.0.0
@@ -53,9 +53,9 @@ git tag v1.0.0 && git push origin v1.0.0
 
 ## Upload
 
-Einzelne Dateien (HTML, CSS, JS, Bilder) oder eine ZIP mit Ordnerstruktur. Ein einzelner Wrapper-Ordner in der ZIP wird entfernt. Ohne `index.html` wird die erste `.html` ausgeliefert.
+Single files (HTML, CSS, JS, images) or a ZIP with a folder structure. A single wrapper folder inside the ZIP is removed. Without an `index.html`, the first `.html` file is served.
 
-## Lokal entwickeln
+## Local development
 
 ```bash
 composer install && php artisan migrate && php artisan make:filament-user
