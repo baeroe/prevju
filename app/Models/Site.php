@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use ZipArchive;
 
 class Site extends Model
@@ -46,6 +47,22 @@ class Site extends Model
         return substr(hash_hmac('sha256', $this->slug.'|'.$this->password, config('app.key')), 0, 20);
     }
 
+    /** What admin UI and MCP clients get to see: never the password hash. */
+    public function summary(): array
+    {
+        $files = $this->fileList();
+
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'url' => $this->url(),
+            'has_password' => filled($this->password),
+            'file_count' => $files->count(),
+            'has_html' => $files->contains(fn ($f) => str_ends_with($f, '.html')),
+            'updated_at' => $this->updated_at->toIso8601String(),
+        ];
+    }
+
     /** Relative paths of all files on disk, e.g. "css/style.css". */
     public function fileList(): Collection
     {
@@ -58,18 +75,26 @@ class Site extends Model
     }
 
     /** Store an upload at a relative path; zips are unpacked in place of being stored. */
-    public function addFile(UploadedFile $file, string $path): void
+    public function addFile(UploadedFile $file, string $path, bool $replace = false): void
     {
-        $path = self::cleanPath($path) ?? abort(422, 'Ungültiger Dateipfad.');
+        $path = self::validPath($path);
+        $this->writeInto(fn (string $dir) => $this->store($dir, $file->getRealPath(), $path), $replace);
+    }
 
-        if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'zip') {
-            $this->extractZip($file->getRealPath(), dirname($path) === '.' ? '' : dirname($path).'/');
-        } else {
-            File::ensureDirectoryExists(dirname($this->dir().'/'.$path));
-            File::copy($file->getRealPath(), $this->dir().'/'.$path);
+    /** @param array<string, string> $files relative path => text content */
+    public function writeFiles(array $files, bool $replace = false): void
+    {
+        $clean = [];
+        foreach ($files as $path => $content) {
+            $clean[self::validPath($path)] = $content;
         }
 
-        $this->touch();
+        $this->writeInto(function (string $dir) use ($clean) {
+            foreach ($clean as $path => $content) {
+                File::ensureDirectoryExists(dirname("{$dir}/{$path}"));
+                File::put("{$dir}/{$path}", $content);
+            }
+        }, $replace);
     }
 
     public function deleteFile(string $path): void
@@ -79,12 +104,67 @@ class Site extends Model
         $this->touch();
     }
 
-    /** Unpack a zip into the site dir, dropping a single wrapping folder if present. */
+    public function clearFiles(): void
+    {
+        File::deleteDirectory($this->dir());
+        $this->touch();
+    }
+
+    /** Relative path or a validation error (shown in the admin and passed on to MCP clients). */
+    public static function validPath(string $path): string
+    {
+        return self::cleanPath($path) ?? throw ValidationException::withMessages(['path' => "Ungültiger Dateipfad: {$path}"]);
+    }
+
+    /**
+     * Run $write against the site dir. With $replace it writes into a staging dir that is swapped in
+     * afterwards, so the live site is never empty or half replaced, and a failed write changes nothing.
+     */
+    private function writeInto(callable $write, bool $replace): void
+    {
+        if (! $replace) {
+            $write($this->dir());
+            $this->touch();
+
+            return;
+        }
+
+        $staging = $this->dir().'.new-'.Str::random(8);
+        File::ensureDirectoryExists($staging);
+        try {
+            $write($staging);
+        } catch (\Throwable $e) {
+            File::deleteDirectory($staging);
+            throw $e;
+        }
+
+        $old = $this->dir().'.old-'.Str::random(8);
+        if (is_dir($this->dir())) {
+            rename($this->dir(), $old);
+        }
+        rename($staging, $this->dir());
+        File::deleteDirectory($old);
+        $this->touch();
+    }
+
+    private function store(string $dir, string $source, string $path): void
+    {
+        if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'zip') {
+            $this->extractZip($source, dirname($path) === '.' ? $dir : "{$dir}/".dirname($path));
+
+            return;
+        }
+
+        File::ensureDirectoryExists(dirname("{$dir}/{$path}"));
+        File::copy($source, "{$dir}/{$path}");
+    }
+
+    /** Unpack a zip into $into, dropping a single wrapping folder if present. */
     private function extractZip(string $zipPath, string $into): void
     {
         $zip = new ZipArchive;
         if ($zip->open($zipPath) !== true) {
-            abort(422, 'ZIP-Datei lässt sich nicht öffnen.');
+            throw ValidationException::withMessages(['file' => 'ZIP-Datei lässt sich nicht öffnen.']);
         }
 
         $names = [];
@@ -99,7 +179,7 @@ class Site extends Model
         $prefix = self::commonFolder($names);
 
         foreach ($names as $name) {
-            $target = $this->dir().'/'.$into.substr($name, strlen($prefix));
+            $target = "{$into}/".substr($name, strlen($prefix));
             File::ensureDirectoryExists(dirname($target));
             copy("zip://{$zipPath}#{$name}", $target);
         }

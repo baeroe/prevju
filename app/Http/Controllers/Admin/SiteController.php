@@ -78,17 +78,6 @@ class SiteController extends Controller
 
     private function card(Site $site): array
     {
-        $files = $site->fileList();
-
-        return [
-            'id' => $site->id,
-            'name' => $site->name,
-            'url' => $site->url(),
-            'preview_url' => $site->previewUrl(),
-            'has_password' => filled($site->password),
-            'file_count' => $files->count(),
-            'has_html' => $files->contains(fn ($f) => str_ends_with($f, '.html')),
-            'updated_at' => $site->updated_at->toIso8601String(),
-        ];
+        return [...$site->summary(), 'preview_url' => $site->previewUrl()];
     }
 }

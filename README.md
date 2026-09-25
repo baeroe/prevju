@@ -54,6 +54,30 @@ Push a git tag, GitHub Actions builds the image for amd64 and arm64 and pushes i
 git tag v1.0.0 && git push origin v1.0.0
 ```
 
+## MCP (upload drafts from Claude)
+
+prevju has an MCP server at `<APP_URL>/mcp`. Create a token in the admin under **MCP**, then:
+
+Claude Code (`--scope user` for all projects, `--scope local` for the current one):
+
+```bash
+claude mcp add --transport http --scope user prevju https://preview.example.com/mcp --header "Authorization: Bearer <token>"
+```
+
+Codex: add this to `~/.codex/config.toml` (all projects) or `.codex/config.toml` in a trusted project. Keep the project file out of git, it contains the token.
+
+```toml
+[mcp_servers.prevju]
+url = "https://preview.example.com/mcp"
+http_headers = { "Authorization" = "Bearer <token>" }
+```
+
+The admin's MCP page generates both commands with your token filled in.
+
+Claude can then create sites, write generated HTML/CSS/JS directly, upload zips from disk and manage passwords. Tools: `list-sites`, `get-site`, `create-site`, `update-site`, `write-files`, `get-upload-url`, `delete-file`, `clear-files`, `delete-site`. For a new version of a draft it uploads with `replace`, the live site switches over in one step.
+
+Zips and other binary files are uploaded with `curl` to a signed URL, so they need a client with a shell (Claude Code, Codex). Connectors in claude.ai and Claude Desktop need OAuth, which prevju doesn't support yet.
+
 ## Upload
 
 Drag a folder, single files (HTML, CSS, JS, images) or a ZIP onto the site. Folder structure is kept; a single wrapper folder (`dist/…` or inside the ZIP) is removed. Without an `index.html`, the first `.html` file is served. See [What works](#what-works) for links and SPAs.
