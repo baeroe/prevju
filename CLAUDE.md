@@ -43,7 +43,7 @@ docker build -t baeroe/prevju:latest .    # lokal bauen statt ziehen
 
 Beim Container-Start läuft `docker/entrypoint.d/99-prevju.sh`: fehlt `APP_KEY`, wird einer erzeugt und in `storage/app/.app-key` (Volume) gespeichert; dann SQLite anlegen, migrieren, Admin-User sicherstellen, `optimize` (cacht die Config inkl. Key).
 
-Release: Git-Tag `vX.Y.Z` pushen → `.github/workflows/docker.yml` baut amd64+arm64 und pusht `baeroe/prevju:X.Y.Z`, `:X.Y` und `:latest`. Braucht Repo-Secrets `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN`.
+Release: Git-Tag `vX.Y.Z` pushen → `.github/workflows/docker.yml` baut amd64+arm64 und pusht `baeroe/prevju:X.Y.Z`, `:X.Y` und `:latest`, danach legt es ein GitHub-Release mit generierten Notes an (aus PRs/Commits seit dem letzten Tag). Hinweise für Nutzer (Breaking Changes, Upgrade-Schritte) danach im Release von Hand ergänzen. Braucht Repo-Secrets `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN`.
 
 ## Architektur
 
