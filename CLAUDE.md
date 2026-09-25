@@ -1,47 +1,60 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# CLAUDE.md
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Prerequisites
+Projektgedächtnis (Session-Notizen, Entscheidungen, Deploy-Weg): `docs/history/`.
 
-Verify that PHP and Composer are available:
+**Diese Datei aktuell halten.** Wer Stack, Ablauf, Kommandos oder Konventionen ändert, passt CLAUDE.md im selben Commit an. Veraltete Angaben hier sind schlimmer als keine.
 
-```sh
-php -v
-composer -V
+## Was prevju ist
+
+Statische HTML-Entwürfe hochladen, Link an den Kunden schicken, optional mit Passwort. Ein Admin (Filament) verwaltet "Sites", jede Site ist ein Ordner mit Dateien und wird unter `/s/<slug>/` ausgeliefert. Mehr gibt es nicht. Neue Features nur, wenn sie diesen Zweck direkt stützen.
+
+## Tech Stack
+
+- PHP ^8.3, Laravel ^13.17, Filament ^5.8 (Admin-Panel unter `/admin`)
+- SQLite (eine Datei), Session/Cache als Files, Queue `sync`. Keine Worker, keine Cronjobs, kein Redis.
+- Uploads liegen auf der Disk `sites` (`storage/app/sites/<slug>/`, siehe `config/filesystems.php`)
+- Vite + Tailwind 4 nur für Filament-Assets; das Kunden-Frontend ist reines Blade (eine View: `site-password`)
+- Tests: PHPUnit ^12.5, Formatierung: Laravel Pint
+- Betrieb: Docker-Image auf Basis `serversideup/php:8.4-fpm-nginx`, Port 8080, Daten im Volume `prevju-data`. HTTPS macht ein vorgeschalteter Reverse-Proxy.
+
+## Kommandos
+
+```bash
+composer install && php artisan migrate && php artisan make:filament-user
+php artisan serve                         # http://localhost:8000/admin
+php artisan test                          # alle Tests
+php artisan test --filter=test_password_protected_site   # einzelner Test
+vendor/bin/pint                           # Code formatieren
+php artisan app:ensure-admin              # Admin-User aus ADMIN_EMAIL / ADMIN_PASSWORD anlegen
 ```
 
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
+Docker (Self-Hosting mit fertigem Image `baeroe/prevju` von Docker Hub):
 
-macOS:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
+```bash
+cp .env.docker.example .env               # APP_URL, ADMIN_EMAIL, ADMIN_PASSWORD setzen
+docker compose up -d                      # zieht baeroe/prevju:latest
+docker build -t baeroe/prevju:latest .    # lokal bauen statt ziehen
 ```
 
-Windows PowerShell:
+Beim Container-Start läuft `docker/entrypoint.d/99-prevju.sh`: fehlt `APP_KEY`, wird einer erzeugt und in `storage/app/.app-key` (Volume) gespeichert; dann SQLite anlegen, migrieren, Admin-User sicherstellen, `optimize` (cacht die Config inkl. Key).
 
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
+Release: Git-Tag `vX.Y.Z` pushen → `.github/workflows/docker.yml` baut amd64+arm64 und pusht `baeroe/prevju:X.Y.Z`, `:X.Y` und `:latest`. Braucht Repo-Secrets `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN`.
 
-Linux:
+## Architektur
 
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
+Drei Dateien tragen die gesamte Logik:
 
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
+- `app/Models/Site.php`: Model plus Dateiverwaltung. Im `saved`-Event werden hochgeladene ZIPs entpackt (ein einzelner Wrapper-Ordner wird entfernt, `__MACOSX` und `..`-Pfade übersprungen) und Dateien, die im Upload-Feld entfernt wurden, von der Disk gelöscht. `deleting` löscht den ganzen Ordner. Das `files`-Array in der DB spiegelt den Disk-Stand und wird nach dem Entpacken per Direkt-Update synchronisiert, weil der Dirty-Check im `saved`-Event gegen veraltete Originale vergleicht.
+- `app/Http/Controllers/SiteController.php`: liefert Dateien aus (`show`) und schaltet passwortgeschützte Sites frei (`unlock`). Path-Traversal wird per `realpath`-Vergleich mit dem Site-Root geblockt. Ordner ohne `index.html` liefern die erste `.html`. Freischaltung ist ein Session-Flag `site.<id>`.
+- `app/Filament/Resources/Sites/`: Formular (`Schemas/SiteForm.php`), Tabelle (`Tables/SitesTable.php`), Pages. Slug wird beim Anlegen zufällig erzeugt (10 Zeichen, Hidden-Feld). Passwort wird gehasht gespeichert und im Edit-Formular nie zurückgegeben; leer lassen behält es, Checkbox `clear_password` entfernt es.
 
-## Agent Setup
+Routen (`routes/web.php`): `/` leitet auf `/admin`, `POST /s/{slug}` = unlock, `GET /s/{slug}/{path?}` = show mit Wildcard-Pfad.
 
-Install Laravel Boost from the application root before making application changes:
+## Konventionen und Fallstricke
 
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>
+- Upload-Limit 100 MB pro Datei an zwei Stellen: `SiteForm` (`maxSize`) und `AppServiceProvider` (Livewire-Temp-Upload-Rules). Dockerfile erlaubt 200M (`PHP_UPLOAD_MAX_FILE_SIZE`, `NGINX_CLIENT_MAX_BODY_SIZE`), muss über dem App-Limit bleiben. Beim Ändern alle drei prüfen.
+- Tests in `tests/Feature/SiteTest.php` schreiben in das echte `storage/app/sites/abc123` und räumen es im `tearDown` auf. Kein Storage-Fake.
+- UI-Texte im Admin und in der Passwort-View sind Deutsch.
+- `.env` wird im Docker-Setup nicht ins Image kopiert; alle Laufzeitwerte kommen aus `docker-compose.yml` bzw. der `.env` daneben.

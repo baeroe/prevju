@@ -2,25 +2,53 @@
 
 HTML-Entwürfe hochladen, Link an den Kunden schicken. Optional mit Passwort.
 
-## Betrieb (Docker Compose)
+## Self-Hosting (Docker Compose)
 
-```bash
-cp .env.docker.example .env      # APP_KEY, APP_URL, ADMIN_EMAIL, ADMIN_PASSWORD setzen
-docker compose run --rm prevju php artisan key:generate --show   # → APP_KEY
-docker compose up -d --build
+Kein Code nötig, nur zwei Dateien. `docker-compose.yml`:
+
+```yaml
+services:
+  prevju:
+    image: baeroe/prevju:latest
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      APP_URL: "${APP_URL}"
+      ADMIN_EMAIL: "${ADMIN_EMAIL}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+    volumes:
+      - prevju-data:/var/www/html/storage/app
+
+volumes:
+  prevju-data:
 ```
 
-- Admin: `https://<APP_URL>/admin` (Login mit `ADMIN_EMAIL` / `ADMIN_PASSWORD`, User wird beim Start angelegt)
-- Kundenlink: `https://<APP_URL>/s/<slug>/`
-- Daten (SQLite + Uploads) liegen im Volume `prevju-data`.
-- HTTPS über vorgeschalteten Reverse-Proxy (Caddy/Traefik) auf Port 8080.
-
-### Image bauen und in Registry pushen
+`.env` daneben:
 
 ```bash
-docker build -t registry.example.com/prevju:latest .
-docker push registry.example.com/prevju:latest
-# auf dem Server: PREVJU_IMAGE=registry.example.com/prevju:latest in .env, dann docker compose up -d
+APP_URL=https://preview.example.com
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=change-me
+```
+
+```bash
+docker compose up -d                              # starten
+docker compose pull && docker compose up -d       # updaten
+```
+
+- Admin: `<APP_URL>/admin` (Login mit `ADMIN_EMAIL` / `ADMIN_PASSWORD`, User wird beim Start angelegt)
+- Kundenlink: `<APP_URL>/s/<slug>/`
+- Daten (SQLite, Uploads, generierter `APP_KEY`) liegen im Volume `prevju-data`.
+- HTTPS über vorgeschalteten Reverse-Proxy (Caddy/Traefik) auf Port 8080.
+- Feste Version statt `latest`: `image: baeroe/prevju:1.0.0`
+
+### Release
+
+Git-Tag pushen, GitHub Actions baut das Image für amd64 und arm64 und pusht es nach Docker Hub:
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
 ```
 
 ## Upload
