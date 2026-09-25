@@ -49,6 +49,24 @@ class AdminTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_urls_are_https_behind_a_private_reverse_proxy(): void
+    {
+        auth()->logout();
+
+        $viaProxy = $this->withServerVariables(['REMOTE_ADDR' => '172.18.0.2'])
+            ->withHeader('X-Forwarded-Proto', 'https')->get('/sites');
+        $this->assertStringStartsWith('https://', $viaProxy->headers->get('Location'));
+    }
+
+    public function test_public_client_cannot_claim_https_via_header(): void
+    {
+        auth()->logout();
+
+        $direct = $this->withServerVariables(['REMOTE_ADDR' => '203.0.113.9'])
+            ->withHeader('X-Forwarded-Proto', 'https')->get('/sites');
+        $this->assertStringStartsWith('http://', $direct->headers->get('Location'));
+    }
+
     public function test_index_lists_sites_without_password_hash(): void
     {
         $this->site->update(['password' => Hash::make('pw')]);
