@@ -3,23 +3,22 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use ZipArchive;
 
 class Site extends Model
 {
-    protected $fillable = ['name', 'slug', 'password', 'files'];
+    protected $fillable = ['name', 'slug', 'password'];
 
-    protected $casts = ['files' => 'array'];
+    protected $hidden = ['password'];
 
     protected static function booted(): void
     {
-        static::saved(function (Site $site) {
-            $site->extractZips();
-            $site->pruneRemovedFiles();
-        });
+        static::creating(fn (Site $site) => $site->slug ??= Str::lower(Str::random(10)));
         static::deleting(fn (Site $site) => File::deleteDirectory($site->dir()));
     }
 
@@ -33,6 +32,20 @@ class Site extends Model
         return url("/s/{$this->slug}").'/';
     }
 
+    /**
+     * Password-free URL for the admin's sandboxed preview iframes (those send no session cookie).
+     * Relative asset paths inherit the prefix; the signature changes with the password.
+     */
+    public function previewUrl(): string
+    {
+        return url("/p/{$this->previewSignature()}/{$this->slug}").'/';
+    }
+
+    public function previewSignature(): string
+    {
+        return substr(hash_hmac('sha256', $this->slug.'|'.$this->password, config('app.key')), 0, 20);
+    }
+
     /** Relative paths of all files on disk, e.g. "css/style.css". */
     public function fileList(): Collection
     {
@@ -44,57 +57,67 @@ class Site extends Model
             ->values();
     }
 
-    /** Unpack uploaded zips into the site dir, dropping a single wrapping folder if present. */
-    public function extractZips(): void
+    /** Store an upload at a relative path; zips are unpacked in place of being stored. */
+    public function addFile(UploadedFile $file, string $path): void
     {
-        $extracted = false;
+        $path = self::cleanPath($path) ?? abort(422, 'Ungültiger Dateipfad.');
 
-        foreach (File::glob($this->dir().'/*.zip') as $zipPath) {
-            $zip = new ZipArchive;
-            if ($zip->open($zipPath) !== true) {
-                continue;
-            }
-
-            $names = [];
-            for ($i = 0; $i < $zip->numFiles; $i++) {
-                $name = $zip->getNameIndex($i);
-                if (str_contains($name, '..') || str_starts_with($name, '__MACOSX') || str_ends_with($name, '/')) {
-                    continue;
-                }
-                $names[] = $name;
-            }
-
-            $prefix = self::commonFolder($names);
-
-            foreach ($names as $name) {
-                $target = $this->dir().'/'.substr($name, strlen($prefix));
-                File::ensureDirectoryExists(dirname($target));
-                copy("zip://{$zipPath}#{$name}", $target);
-            }
-
-            $zip->close();
-            File::delete($zipPath);
-            $extracted = true;
+        if (strtolower(pathinfo($path, PATHINFO_EXTENSION)) === 'zip') {
+            $this->extractZip($file->getRealPath(), dirname($path) === '.' ? '' : dirname($path).'/');
+        } else {
+            File::ensureDirectoryExists(dirname($this->dir().'/'.$path));
+            File::copy($file->getRealPath(), $this->dir().'/'.$path);
         }
 
-        if ($extracted) {
-            // keep the upload field in sync with what is really on disk, so single files can be removed there
-            $this->files = $this->fileList()->map(fn ($f) => "{$this->slug}/{$f}")->all();
-            // direct update: inside the saved event the dirty check compares against stale originals
-            $this->newQuery()->whereKey($this->getKey())->update(['files' => json_encode($this->files)]);
-        }
+        $this->touch();
     }
 
-    /** Files removed in the upload field are only dropped from `files`; delete them from disk too. */
-    public function pruneRemovedFiles(): void
+    public function deleteFile(string $path): void
     {
-        if ($this->files === null) {
-            return;
+        $path = self::cleanPath($path) ?? abort(404);
+        File::delete($this->dir().'/'.$path);
+        $this->touch();
+    }
+
+    /** Unpack a zip into the site dir, dropping a single wrapping folder if present. */
+    private function extractZip(string $zipPath, string $into): void
+    {
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath) !== true) {
+            abort(422, 'ZIP-Datei lässt sich nicht öffnen.');
         }
 
-        $keep = collect($this->files)->map(fn ($f) => substr($f, strlen($this->slug) + 1));
+        $names = [];
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $name = $zip->getNameIndex($i);
+            if (str_starts_with($name, '__MACOSX') || str_ends_with($name, '/') || self::cleanPath($name) === null) {
+                continue;
+            }
+            $names[] = $name;
+        }
 
-        $this->fileList()->diff($keep)->each(fn ($f) => File::delete($this->dir().'/'.$f));
+        $prefix = self::commonFolder($names);
+
+        foreach ($names as $name) {
+            $target = $this->dir().'/'.$into.substr($name, strlen($prefix));
+            File::ensureDirectoryExists(dirname($target));
+            copy("zip://{$zipPath}#{$name}", $target);
+        }
+
+        $zip->close();
+    }
+
+    /** Normalized relative path, or null if it could escape the site dir. */
+    private static function cleanPath(string $path): ?string
+    {
+        $path = trim(str_replace('\\', '/', $path), '/');
+        $parts = explode('/', $path);
+
+        if ($path === '' || array_intersect($parts, ['', '.', '..'])) {
+            return null;
+        }
+
+        return $path;
     }
 
     private static function commonFolder(array $names): string
