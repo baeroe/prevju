@@ -63,4 +63,5 @@ Routen (`routes/web.php`): `/` leitet auf `/sites`, `/login` (guest), `/sites…
 - Tests laufen ohne Vite-Build (`withoutVite()` im `TestCase`); Inertia-Tests prüfen, dass die Page-Datei existiert.
 - Tests in `tests/Feature/SiteTest.php` schreiben in das echte `storage/app/sites/abc123` und räumen es im `tearDown` auf. Kein Storage-Fake.
 - UI-Texte im Admin und in der Passwort-View sind Deutsch.
+- Trusted Proxies (`bootstrap/app.php`): nur private Netze, damit `X-Forwarded-Proto` vom Reverse-Proxy (NPM/Traefik/Caddy im Docker-Netz) zu `https://`-URLs führt. Nicht auf `*` stellen: der Container-Port ist oft öffentlich, dann wäre `X-Forwarded-For` fälschbar und die Login-Drosselung umgehbar.
 - `.env` wird im Docker-Setup nicht ins Image kopiert; alle Laufzeitwerte kommen aus `docker-compose.yml` bzw. der `.env` daneben.
