@@ -1,31 +1,31 @@
 ---
-title: Impressum
+title: Imprint
 aside: false
 editLink: false
 lastUpdated: false
 ---
 
-# Impressum
+# Imprint
 
-Angaben gemäß § 5 DDG
+Information according to § 5 DDG (German Digital Services Act). This is a translation, the [German version](/de/imprint) is binding.
 
 Rafael Haußmann<br>
 Grabenstetter Straße 13<br>
 72574 Bad Urach<br>
-Deutschland
+Germany
 
-## Kontakt
+## Contact
 
-E-Mail: [rafael@hauss.dev](mailto:rafael@hauss.dev)
+Email: [rafael@hauss.dev](mailto:rafael@hauss.dev)
 
-## Verantwortlich für den Inhalt
+## Responsible for the content
 
-Rafael Haußmann, Anschrift wie oben.
+Rafael Haußmann, address as above.
 
-## Haftung für Links
+## Links to other websites
 
-Diese Seite enthält Links zu externen Websites (z. B. GitHub, Docker Hub). Für deren Inhalte sind ausschließlich die jeweiligen Betreiber verantwortlich. Zum Zeitpunkt der Verlinkung waren keine Rechtsverstöße erkennbar. Werden solche bekannt, entferne ich die Links umgehend.
+This site links to external websites (e.g. GitHub, Docker Hub). Their operators alone are responsible for their content. No legal violations were apparent at the time of linking. Should any become known, I will remove the links immediately.
 
 ## Software
 
-prevju ist Open-Source-Software unter der [MIT-Lizenz](https://github.com/baeroe/prevju/blob/main/LICENSE). Wer prevju selbst betreibt, ist für die eigene Instanz verantwortlich.
+prevju is open-source software under the [MIT license](https://github.com/baeroe/prevju/blob/main/LICENSE). Whoever runs their own prevju instance is responsible for it.
