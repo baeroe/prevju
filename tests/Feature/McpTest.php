@@ -68,19 +68,19 @@ class McpTest extends TestCase
             ->assertSee([
                 'Check the draft against this before uploading',
                 url('/s').'/<slug>/',
-                '## What works',
+                '# What works',
                 '| Root-absolute paths',
                 "export default { base: './' }",
                 'BrowserRouter basename',
             ])
-            ->assertDontSee('## Self-hosting');
+            ->assertDontSee('# Setup');
     }
 
-    public function test_readme_still_has_the_section_the_tool_reads(): void
+    public function test_docs_page_the_tool_reads_still_has_the_table(): void
     {
         $section = Tools\GetCompatibility::section();
 
-        $this->assertStringStartsWith('## What works', $section);
+        $this->assertStringStartsWith('# What works', $section);
         $this->assertStringContainsString('| Draft | Works? | Notes |', $section);
     }
 

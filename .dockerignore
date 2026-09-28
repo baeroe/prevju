@@ -12,3 +12,7 @@ database/*.sqlite
 tests
 public/build
 public/hot
+docs/node_modules
+docs/.vitepress/cache
+docs/.vitepress/dist
+docs/public

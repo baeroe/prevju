@@ -1,0 +1,105 @@
+/* prevju tokens (see ../../../DESIGN.md), mapped onto VitePress variables */
+:root {
+    --paper: oklch(0.968 0.003 95);
+    --sheet: oklch(0.993 0.002 95);
+    --ink: oklch(0.23 0.025 255);
+    --ink-muted: oklch(0.5 0.015 255);
+    --hairline: oklch(0.86 0.006 255);
+    --signal: oklch(0.7 0.19 45);
+    --signal-deep: oklch(0.56 0.17 45); /* signal as text/link colour: plain signal misses 4.5:1 on paper */
+
+    --vp-font-family-base: 'Instrument Sans', ui-sans-serif, sans-serif;
+    --vp-font-family-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --vp-c-bg: var(--paper);
+    --vp-c-bg-alt: var(--sheet);
+    --vp-c-bg-elv: var(--sheet);
+    --vp-c-bg-soft: var(--sheet);
+    --vp-c-text-1: var(--ink);
+    --vp-c-text-2: var(--ink-muted);
+    --vp-c-divider: var(--hairline);
+    --vp-c-gutter: var(--hairline);
+    --vp-c-border: var(--hairline);
+
+    --vp-c-brand-1: var(--signal-deep);
+    --vp-c-brand-2: var(--ink);
+    --vp-c-brand-3: var(--signal);
+    --vp-c-brand-soft: oklch(0.7 0.19 45 / 0.12);
+
+    --vp-button-brand-bg: var(--signal);
+    --vp-button-brand-text: var(--ink);
+    --vp-button-brand-hover-bg: var(--ink);
+    --vp-button-brand-hover-text: var(--sheet);
+    --vp-button-brand-active-bg: var(--ink);
+    --vp-button-alt-bg: var(--sheet);
+    --vp-button-alt-text: var(--ink);
+    --vp-button-alt-border: var(--ink);
+    --vp-button-alt-hover-bg: var(--ink);
+    --vp-button-alt-hover-text: var(--sheet);
+
+    --vp-code-block-bg: var(--sheet);
+    --vp-code-bg: oklch(0.23 0.025 255 / 0.06);
+    --vp-code-color: var(--ink);
+    --vp-home-hero-name-color: var(--ink);
+}
+
+/* radius 0 everywhere, no shadows (DESIGN.md) */
+.VPButton,
+.VPFeature,
+div[class*='language-'],
+.custom-block,
+.vp-code-group .tabs,
+.DocSearch-Button,
+.VPLocalSearchBox .shell,
+img {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+div[class*='language-'] {
+    border: 1px solid var(--hairline);
+}
+.VPFeature {
+    border: 1px solid var(--hairline);
+    background: var(--sheet);
+}
+
+.VPHero .name {
+    letter-spacing: -0.03em;
+}
+.VPHero .text {
+    letter-spacing: -0.02em;
+    max-width: 18ch;
+    text-wrap: balance;
+}
+
+/* crop marks around the hero screenshot, the one decorative element */
+.crop {
+    position: relative;
+    --len: 14px;
+    --gap: 8px;
+}
+.crop > i {
+    position: absolute;
+    width: var(--len);
+    height: var(--len);
+    border-color: var(--ink);
+}
+.crop > i:nth-of-type(1) { top: calc(-1 * (var(--len) + var(--gap))); left: calc(-1 * (var(--len) + var(--gap))); border-right: 1px solid; border-bottom: 1px solid; }
+.crop > i:nth-of-type(2) { top: calc(-1 * (var(--len) + var(--gap))); right: calc(-1 * (var(--len) + var(--gap))); border-left: 1px solid; border-bottom: 1px solid; }
+.crop > i:nth-of-type(3) { bottom: calc(-1 * (var(--len) + var(--gap))); left: calc(-1 * (var(--len) + var(--gap))); border-right: 1px solid; border-top: 1px solid; }
+.crop > i:nth-of-type(4) { bottom: calc(-1 * (var(--len) + var(--gap))); right: calc(-1 * (var(--len) + var(--gap))); border-left: 1px solid; border-top: 1px solid; }
+.crop img {
+    display: block;
+    width: 100%;
+    border: 1px solid var(--hairline);
+}
+.showcase {
+    max-width: 1152px;
+    margin: 88px auto 96px;
+    padding: 0 48px;
+}
+@media (max-width: 640px) {
+    .showcase {
+        padding: 0 32px;
+    }
+}
