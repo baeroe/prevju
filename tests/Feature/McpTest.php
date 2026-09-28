@@ -51,12 +51,47 @@ class McpTest extends TestCase
         $token = $user->createToken('test');
         $this->postJson('/mcp', $call, ['Authorization' => "Bearer {$token->plainTextToken}"])
             ->assertOk()
-            ->assertJsonPath('result.tools.0.name', 'list-sites')
-            ->assertJsonCount(9, 'result.tools');
+            ->assertJsonPath('result.tools.0.name', 'get-compatibility')
+            ->assertJsonCount(10, 'result.tools');
 
         $token->accessToken->delete();
         auth()->forgetGuards();
         $this->postJson('/mcp', $call, ['Authorization' => "Bearer {$token->plainTextToken}"])->assertUnauthorized();
+    }
+
+    // --- compatibility ---
+
+    public function test_get_compatibility_returns_the_readme_section(): void
+    {
+        PrevjuServer::tool(Tools\GetCompatibility::class)
+            ->assertOk()
+            ->assertSee([
+                'Check the draft against this before uploading',
+                url('/s').'/<slug>/',
+                '## What works',
+                '| Root-absolute paths',
+                "export default { base: './' }",
+                'BrowserRouter basename',
+            ])
+            ->assertDontSee('## Self-hosting');
+    }
+
+    public function test_readme_still_has_the_section_the_tool_reads(): void
+    {
+        $section = Tools\GetCompatibility::section();
+
+        $this->assertStringStartsWith('## What works', $section);
+        $this->assertStringContainsString('| Draft | Works? | Notes |', $section);
+    }
+
+    public function test_upload_tools_and_instructions_point_to_get_compatibility(): void
+    {
+        foreach ([Tools\CreateSite::class, Tools\WriteFiles::class, Tools\GetUploadUrl::class] as $tool) {
+            $this->assertStringContainsString('get-compatibility', (new $tool)->description(), $tool);
+        }
+
+        $instructions = (new \ReflectionClass(PrevjuServer::class))->getAttributes(Instructions::class)[0]->getArguments()[0];
+        $this->assertStringContainsString('Before uploading anything, call get-compatibility', $instructions);
     }
 
     // --- read ---

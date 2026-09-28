@@ -74,7 +74,7 @@ http_headers = { "Authorization" = "Bearer <token>" }
 
 The admin's MCP page generates both commands with your token filled in.
 
-Claude can then create sites, write generated HTML/CSS/JS directly, upload zips from disk and manage passwords. Tools: `list-sites`, `get-site`, `create-site`, `update-site`, `write-files`, `get-upload-url`, `delete-file`, `clear-files`, `delete-site`. For a new version of a draft it uploads with `replace`, the live site switches over in one step.
+Claude can then create sites, write generated HTML/CSS/JS directly, upload zips from disk and manage passwords. Tools: `get-compatibility`, `list-sites`, `get-site`, `create-site`, `update-site`, `write-files`, `get-upload-url`, `delete-file`, `clear-files`, `delete-site`. Before uploading, the agent checks the project against [What works](#what-works) via `get-compatibility`. For a new version of a draft it uploads with `replace`, the live site switches over in one step.
 
 Zips and other binary files are uploaded with `curl` to a signed URL, so they need a client with a shell (Claude Code, Codex). Connectors in claude.ai and Claude Desktop need OAuth, which prevju doesn't support yet.
 

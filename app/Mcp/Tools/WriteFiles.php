@@ -12,6 +12,7 @@ use Laravel\Mcp\Server\Attributes\Description;
     Write text files (HTML, CSS, JS, SVG, JSON) you generated into a site. Paths are relative, folders are created.
     replace=true swaps the whole site for exactly these files in one step (use it for a new version of a draft); otherwise files are added or overwritten.
     For zips, images or other files on disk use get-upload-url instead.
+    Before writing a draft, check it against get-compatibility (relative paths, no root-absolute /… links).
     TXT)]
 class WriteFiles extends SiteTool
 {

@@ -10,7 +10,7 @@ use Laravel\Mcp\Response;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Tool;
 
-#[Description('Create an empty site. Returns its id and the public url to send to the client. Add files with write-files or get-upload-url.')]
+#[Description('Create an empty site. Returns its id and the public url to send to the client. Add files with write-files or get-upload-url, after checking the project against get-compatibility.')]
 class CreateSite extends Tool
 {
     public function handle(Request $request): Response
