@@ -11,6 +11,7 @@ use Laravel\Mcp\Server\Attributes\Description;
 #[Description(<<<'TXT'
     Get a short-lived upload URL for files on disk, typically a zip of a built draft. Upload with the returned curl command (multipart field "file").
     Zips are unpacked, a single wrapping folder is dropped. Other files land at their file name, or at the optional "path" form field.
+    Before uploading, check the project against get-compatibility: a Vite/CRA build with default settings will not load (it needs a relative base).
     The URL is valid for 15 minutes and can be used for several uploads. With replace=true every upload replaces the whole site, so use it for one zip only.
     TXT)]
 class GetUploadUrl extends SiteTool
