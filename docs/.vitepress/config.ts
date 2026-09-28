@@ -1,10 +1,35 @@
-import { defineConfig } from 'vitepress';
+import { defineConfig, type DefaultTheme } from 'vitepress';
 import llmstxt from 'vitepress-plugin-llms';
+
+const pages = (prefix: string, t: Record<string, string>): DefaultTheme.SidebarItem[] => [
+    {
+        text: t.guide,
+        items: ['setup', 'reverse-proxy', 'uploading', 'what-works', 'mcp', 'upgrading'].map((p) => ({ text: t[p], link: `${prefix}/${p}` })),
+    },
+];
+
+const en = {
+    guide: 'Guide',
+    setup: 'Setup',
+    'reverse-proxy': 'Reverse proxy',
+    uploading: 'Uploading',
+    'what-works': 'What works',
+    mcp: 'MCP',
+    upgrading: 'Upgrading',
+};
+
+const de = {
+    guide: 'Anleitung',
+    setup: 'Einrichtung',
+    'reverse-proxy': 'Reverse-Proxy',
+    uploading: 'Hochladen',
+    'what-works': 'Was funktioniert',
+    mcp: 'MCP',
+    upgrading: 'Aktualisieren',
+};
 
 export default defineConfig({
     title: 'prevju',
-    description: 'Self-hosted previews for HTML drafts. Upload, send the link, optionally with a password.',
-    lang: 'en',
     cleanUrls: true,
     lastUpdated: true,
     // docs/history is the project's internal memory, not part of the site
@@ -17,32 +42,80 @@ export default defineConfig({
         ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/sites.png' }],
     ],
     appearance: false,
-    vite: { plugins: [llmstxt({ ignoreFiles: ['imprint.md', 'privacy.md'] })] },
+    // agents get the English docs only, without the legal pages
+    vite: { plugins: [llmstxt({ ignoreFiles: ['de/**', 'imprint.md', 'privacy.md'] })] },
+
+    locales: {
+        root: {
+            label: 'English',
+            lang: 'en',
+            description: 'Self-hosted previews for HTML drafts. Upload, send the link, optionally with a password.',
+            themeConfig: {
+                nav: [
+                    { text: 'Guide', link: '/setup' },
+                    { text: 'Releases', link: 'https://github.com/baeroe/prevju/releases' },
+                ],
+                sidebar: pages('', en),
+                editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Edit this page' },
+                footer: {
+                    message: 'Released under the MIT License. <a href="/imprint">Imprint</a> · <a href="/privacy">Privacy policy</a>',
+                    copyright: '© 2026 Rafael Haußmann',
+                },
+            },
+        },
+        de: {
+            label: 'Deutsch',
+            lang: 'de',
+            link: '/de/',
+            description: 'Selbst gehostete Vorschauen für HTML-Entwürfe. Hochladen, Link schicken, optional mit Passwort.',
+            themeConfig: {
+                nav: [
+                    { text: 'Anleitung', link: '/de/setup' },
+                    { text: 'Releases', link: 'https://github.com/baeroe/prevju/releases' },
+                ],
+                sidebar: pages('/de', de),
+                editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Seite bearbeiten' },
+                footer: {
+                    message: 'Veröffentlicht unter der MIT-Lizenz. <a href="/de/imprint">Impressum</a> · <a href="/de/privacy">Datenschutz</a>',
+                    copyright: '© 2026 Rafael Haußmann',
+                },
+                outline: { label: 'Auf dieser Seite' },
+                docFooter: { prev: 'Zurück', next: 'Weiter' },
+                lastUpdated: { text: 'Zuletzt aktualisiert' },
+                langMenuLabel: 'Sprache wechseln',
+                returnToTopLabel: 'Nach oben',
+                sidebarMenuLabel: 'Menü',
+                skipToContentLabel: 'Zum Inhalt springen',
+                notFound: {
+                    title: 'Seite nicht gefunden',
+                    quote: 'Diese Seite gibt es nicht (mehr).',
+                    linkLabel: 'Zur Startseite',
+                    linkText: 'Zur Startseite',
+                },
+            },
+        },
+    },
+
     themeConfig: {
         logo: { src: '/logo.svg', alt: '' },
-        nav: [
-            { text: 'Guide', link: '/setup' },
-            { text: 'Releases', link: 'https://github.com/baeroe/prevju/releases' },
-        ],
-        sidebar: [
-            {
-                text: 'Guide',
-                items: [
-                    { text: 'Setup', link: '/setup' },
-                    { text: 'Reverse proxy', link: '/reverse-proxy' },
-                    { text: 'Uploading', link: '/uploading' },
-                    { text: 'What works', link: '/what-works' },
-                    { text: 'MCP', link: '/mcp' },
-                    { text: 'Upgrading', link: '/upgrading' },
-                ],
-            },
-        ],
-        footer: {
-            message: 'Released under the MIT License. <a href="/imprint">Impressum</a> · <a href="/privacy">Datenschutz</a>',
-            copyright: '© 2026 Rafael Haußmann',
-        },
         socialLinks: [{ icon: 'github', link: 'https://github.com/baeroe/prevju' }],
-        search: { provider: 'local' },
-        editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Edit this page' },
+        search: {
+            provider: 'local',
+            options: {
+                locales: {
+                    de: {
+                        translations: {
+                            button: { buttonText: 'Suchen', buttonAriaLabel: 'Suchen' },
+                            modal: {
+                                noResultsText: 'Keine Ergebnisse für',
+                                resetButtonTitle: 'Suche zurücksetzen',
+                                displayDetails: 'Details anzeigen',
+                                footer: { selectText: 'auswählen', navigateText: 'navigieren', closeText: 'schließen' },
+                            },
+                        },
+                    },
+                },
+            },
+        },
     },
 });

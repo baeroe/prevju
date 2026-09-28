@@ -1,38 +1,40 @@
 ---
-title: Datenschutz
+title: Privacy policy
 aside: false
 editLink: false
 lastUpdated: false
 ---
 
-# Datenschutzerklärung
+# Privacy policy
 
-## Verantwortlicher
+This is a translation, the [German version](/de/privacy) is binding.
 
-Rafael Haußmann, Anschrift und Kontakt siehe [Impressum](/imprint).
+## Controller
 
-## Was diese Website verarbeitet
+Rafael Haußmann, address and contact see [Imprint](/imprint).
 
-prevju.dev ist eine statische Website. Sie setzt **keine Cookies**, nutzt **kein Tracking und keine Analyse-Dienste** und lädt keine Inhalte von Dritten nach: Schriften und die Suche sind in die Seite eingebunden, die Suche läuft vollständig in deinem Browser.
+## What this website processes
 
-## Hosting bei GitHub Pages
+prevju.dev is a static website. It sets **no cookies**, uses **no tracking or analytics** and loads nothing from third parties: fonts and search are bundled with the site, and search runs entirely in your browser.
 
-Die Website wird bei GitHub Pages gehostet, einem Dienst der GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. Beim Aufruf verarbeitet GitHub technisch notwendige Daten, insbesondere deine IP-Adresse, Datum und Uhrzeit des Zugriffs, die aufgerufene Seite und Angaben zu Browser und Betriebssystem (Server-Logfiles). Das ist nötig, um die Seite auszuliefern und vor Missbrauch zu schützen.
+## Hosting on GitHub Pages
 
-Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO. Mein berechtigtes Interesse ist eine sichere, zuverlässige Bereitstellung der Website.
+The website is hosted on GitHub Pages, a service of GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. When you open a page, GitHub processes technically necessary data, in particular your IP address, date and time of access, the requested page and details about your browser and operating system (server log files). This is required to deliver the site and protect it against abuse.
 
-Dabei können Daten in die USA übermittelt werden. GitHub ist unter dem EU-US Data Privacy Framework zertifiziert. Details: [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+The legal basis is Art. 6(1)(f) GDPR. My legitimate interest is the secure and reliable delivery of the website.
 
-## Externe Links
+Data may be transferred to the USA. GitHub is certified under the EU-US Data Privacy Framework. Details: [GitHub Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
-Links zu GitHub, Docker Hub und anderen Seiten führen zu Angeboten mit eigenen Datenschutzbestimmungen. Beim Klick verlässt du diese Website.
+## External links
 
-## Deine Rechte
+Links to GitHub, Docker Hub and other sites lead to services with their own privacy policies. Clicking them takes you off this website.
 
-Du hast das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen die Verarbeitung (Art. 21). Wende dich dafür an die im Impressum genannte Adresse.
+## Your rights
 
-Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, etwa der Behörde deines Wohnorts.
+You have the right of access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18), data portability (Art. 20) and to object to processing (Art. 21). Contact the address in the imprint.
 
-## Selbst gehostete prevju-Instanzen
+You can also lodge a complaint with a data protection supervisory authority, for example the one where you live.
 
-Diese Erklärung gilt nur für prevju.dev. Wer prevju selbst betreibt, verarbeitet dort eigene Daten (z. B. Session-Cookies für Login und Passwortseite) und ist dafür selbst verantwortlich.
+## Self-hosted prevju instances
+
+This policy only covers prevju.dev. Whoever runs prevju themselves processes their own data there (e.g. session cookies for login and the password page) and is responsible for it.
