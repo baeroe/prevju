@@ -16,6 +16,14 @@ class DocsTest extends TestCase
         $this->assertSame($names('docs'), $names('docs/de'));
     }
 
+    public function test_upgrading_notes_list_the_same_versions(): void
+    {
+        $versions = fn (string $file) => preg_match_all('/^### (\d+\.\d+(?:\.\d+)?)$/m', File::get(base_path($file)), $m) ? $m[1] : [];
+
+        $this->assertNotEmpty($versions('docs/upgrading.md'));
+        $this->assertSame($versions('docs/upgrading.md'), $versions('docs/de/upgrading.md'));
+    }
+
     public function test_compatibility_tables_have_the_same_verdicts(): void
     {
         // get-compatibility serves the English page to agents, the German one must not drift from it
