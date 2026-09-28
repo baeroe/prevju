@@ -17,7 +17,7 @@ export default defineConfig({
         ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/sites.png' }],
     ],
     appearance: false,
-    vite: { plugins: [llmstxt()] },
+    vite: { plugins: [llmstxt({ ignoreFiles: ['imprint.md', 'privacy.md'] })] },
     themeConfig: {
         logo: { src: '/logo.svg', alt: '' },
         nav: [
@@ -37,7 +37,10 @@ export default defineConfig({
                 ],
             },
         ],
-        footer: { message: 'Released under the MIT License.', copyright: '© 2026 Rafael Haußmann' },
+        footer: {
+            message: 'Released under the MIT License. <a href="/imprint">Impressum</a> · <a href="/privacy">Datenschutz</a>',
+            copyright: '© 2026 Rafael Haußmann',
+        },
         socialLinks: [{ icon: 'github', link: 'https://github.com/baeroe/prevju' }],
         search: { provider: 'local' },
         editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Edit this page' },
