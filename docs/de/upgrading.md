@@ -10,6 +10,10 @@ Version gepinnt? Dann zuerst den Tag in der `docker-compose.yml` ändern. Alle V
 
 ## Hinweise pro Version
 
+### 0.3.2
+
+- `get-compatibility` liefert jetzt dieselbe Seite wie [Was funktioniert](/de/what-works) auf prevju.dev, Agenten und Doku sagen also immer dasselbe. Beim Update ist nichts zu tun.
+
 ### 0.3.1
 
 - Neues MCP-Tool `get-compatibility`: Agenten prüfen einen Entwurf vor dem Hochladen gegen [Was funktioniert](/de/what-works). Verbundene MCP-Clients sehen es nach einem Reconnect. Beim Update ist nichts zu tun.
