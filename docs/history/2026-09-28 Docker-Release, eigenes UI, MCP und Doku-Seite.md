@@ -10,12 +10,12 @@ Session vom 2026-09-25 bis 2026-09-28. Vorgänger: [[2026-09-11 Erstes Deploy un
 prevju lief funktional mit Filament-Admin und einem Dockerfile, aber ohne veröffentlichtes Image, ohne GitHub-Repo und ohne Doku. Ziel: selbst hostbar per `docker compose` wie n8n oder Vito, eigener Look, Agenten-Anbindung, öffentliche Doku für Nutzer und Portfolio.
 
 ## Was wurde gemacht
-- **Distribution:** Repo `baeroe/prevju` (public), Image `baeroe/prevju` auf Docker Hub für amd64+arm64 (`15fd995`). Tag `vX.Y.Z` → Build, Push, GitHub-Release mit generierten Notes (`03c1606`). Releases v0.1.0 bis v0.3.1.
-- **Betrieb:** `APP_KEY` wird beim ersten Start erzeugt und im Volume gespeichert. Host-Port 7738 (`8ed9ef9`). Trusted Proxies für private Netze (`4b531e7`).
-- **Repo-Regeln:** Rulesets für `main` (PR, 1 Approval, Tests grün, Admin-Bypass) und für `v*`-Tags (nicht löschen/verschieben). Test-Workflow mit Typecheck (`826dcf6`).
-- **UI:** Filament ersetzt durch Inertia v3 + React 19 + angepasstes shadcn, Richtung „Proof Sheet“ in `DESIGN.md` (`f886e73`). Cards mit Live-Vorschau, Drag & Drop für Ordner/ZIPs, Undo beim Löschen, SPA-Fallback.
-- **MCP:** `laravel/mcp` + Sanctum-Tokens, 10 Tools, Token-Seite mit Setup-Befehl für Claude Code und Codex (`3e34fbe`, `70b5dae`).
-- **Doku:** VitePress in `docs/` auf GitHub Pages unter https://prevju.dev, Englisch + Deutsch, Impressum/Datenschutz, `llms.txt` (`e92cfc4`, `b132843`, `aa526f3`). README gekürzt, Docker-Hub-Beschreibung synchronisiert per Workflow (`a3291a6`). GitHub-About mit Beschreibung, Website, Topics.
+- **Distribution:** Repo `baeroe/prevju` (public), Image `baeroe/prevju` auf Docker Hub für amd64+arm64 (`f8bdeba`). Tag `vX.Y.Z` → Build, Push, GitHub-Release mit generierten Notes (`1e12780`). Releases v0.1.0 bis v0.3.1.
+- **Betrieb:** `APP_KEY` wird beim ersten Start erzeugt und im Volume gespeichert. Host-Port 7738 (`d78bda9`). Trusted Proxies für private Netze (`e53eb97`).
+- **Repo-Regeln:** Rulesets für `main` (PR, 1 Approval, Tests grün, Admin-Bypass) und für `v*`-Tags (nicht löschen/verschieben). Test-Workflow mit Typecheck (`940d0f6`).
+- **UI:** Filament ersetzt durch Inertia v3 + React 19 + angepasstes shadcn, Richtung „Proof Sheet“ in `DESIGN.md` (`96968f4`). Cards mit Live-Vorschau, Drag & Drop für Ordner/ZIPs, Undo beim Löschen, SPA-Fallback.
+- **MCP:** `laravel/mcp` + Sanctum-Tokens, 10 Tools, Token-Seite mit Setup-Befehl für Claude Code und Codex (`9fd5334`, `d482943`).
+- **Doku:** VitePress in `docs/` auf GitHub Pages unter https://prevju.dev, Englisch + Deutsch, Impressum/Datenschutz, `llms.txt` (`7a6171a`, `beab645`, `729f950`). README gekürzt, Docker-Hub-Beschreibung synchronisiert per Workflow (`b61fc52`). GitHub-About mit Beschreibung, Website, Topics.
 - **Lizenz:** MIT (`LICENSE`).
 
 ## Entscheidungen & Warum
