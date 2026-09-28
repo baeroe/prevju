@@ -1,0 +1,21 @@
+name: Docker Hub description
+
+on:
+  push:
+    branches: [main]
+    paths: ['README.md', '.github/workflows/dockerhub.yml']
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # needs a Docker Hub token with read/write/delete scope
+      - uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: baeroe/prevju
+          short-description: Self-hosted previews for HTML drafts. Upload a folder, send the link. MCP for agents.
+          enable-url-completion: true

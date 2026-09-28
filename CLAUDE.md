@@ -6,6 +6,8 @@ Projektgedächtnis (Session-Notizen, Entscheidungen, Deploy-Weg): `docs/history/
 
 **Diese Datei aktuell halten.** Wer Stack, Ablauf, Kommandos oder Konventionen ändert, passt CLAUDE.md im selben Commit an. Veraltete Angaben hier sind schlimmer als keine.
 
+**Die Doku (prevju.dev, `docs/`) ist Teil jeder Änderung.** Jede Änderung, die Nutzer oder Betreiber betrifft (Verhalten, Setup, Umgebungsvariablen, Routen, MCP-Tools, UI-Abläufe, Kompatibilität), passt im selben PR die betroffenen Doku-Seiten an, **auf Englisch und Deutsch**. Kein Merge mit veralteter Doku. Reine Refactorings ohne sichtbare Auswirkung brauchen keine Doku.
+
 ## Was prevju ist
 
 Statische HTML-Entwürfe hochladen, Link an den Kunden schicken, optional mit Passwort. Ein Admin (Inertia + React) verwaltet "Sites", jede Site ist ein Ordner mit Dateien und wird unter `/s/<slug>/` ausgeliefert. Mehr gibt es nicht. Neue Features nur, wenn sie diesen Zweck direkt stützen.
@@ -43,7 +45,7 @@ docker build -t baeroe/prevju:latest .    # lokal bauen statt ziehen
 
 Beim Container-Start läuft `docker/entrypoint.d/99-prevju.sh`: fehlt `APP_KEY`, wird einer erzeugt und in `storage/app/.app-key` (Volume) gespeichert; dann SQLite anlegen, migrieren, Admin-User sicherstellen, `optimize` (cacht die Config inkl. Key).
 
-Release: Git-Tag `vX.Y.Z` pushen → `.github/workflows/docker.yml` baut amd64+arm64 und pusht `baeroe/prevju:X.Y.Z`, `:X.Y` und `:latest`, danach legt es ein GitHub-Release mit generierten Notes an (aus PRs/Commits seit dem letzten Tag). Hinweise für Nutzer (Breaking Changes, Upgrade-Schritte) danach im Release von Hand ergänzen. Braucht Repo-Secrets `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN`.
+Release: Git-Tag `vX.Y.Z` pushen → `.github/workflows/docker.yml` baut amd64+arm64 und pusht `baeroe/prevju:X.Y.Z`, `:X.Y` und `:latest`, danach legt es ein GitHub-Release mit generierten Notes an (aus PRs/Commits seit dem letzten Tag). Hinweise für Nutzer (Breaking Changes, Upgrade-Schritte) danach im Release von Hand ergänzen. **Jedes Release bekommt vor dem Taggen einen Abschnitt in `docs/upgrading.md` und `docs/de/upgrading.md`** (was sich ändert, was beim Update zu tun ist, oder ausdrücklich „nichts zu tun“). Release Notes auf GitHub und Doku sagen dasselbe. Braucht Repo-Secrets `DOCKERHUB_USERNAME` und `DOCKERHUB_TOKEN` (Scope Read/Write/Delete, weil `.github/workflows/dockerhub.yml` damit bei jeder README-Änderung auf `main` die Beschreibung auf Docker Hub synchronisiert).
 
 ## Architektur
 
