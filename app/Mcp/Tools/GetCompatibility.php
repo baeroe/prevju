@@ -20,13 +20,9 @@ class GetCompatibility extends Tool
         );
     }
 
-    /** The "What works" section of the README, so docs and agents read the same source. */
+    /** The "What works" docs page (prevju.dev/what-works), so docs and agents read the same source. */
     public static function section(): string
     {
-        $readme = file_get_contents(base_path('README.md'));
-        $start = strpos($readme, '## What works');
-        $end = strpos($readme, "\n## ", $start + 1);
-
-        return trim(substr($readme, $start, $end === false ? null : $end - $start));
+        return trim(file_get_contents(base_path('docs/what-works.md')));
     }
 }
