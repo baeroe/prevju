@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -13,14 +15,31 @@ use ZipArchive;
 
 class Site extends Model
 {
-    protected $fillable = ['name', 'slug', 'password'];
+    protected $fillable = ['name', 'slug', 'password', 'project_id'];
 
     protected $hidden = ['password'];
+
+    /** Every write touches the site, the site touches its project: both sort by last change. */
+    protected $touches = ['project'];
 
     protected static function booted(): void
     {
         static::creating(fn (Site $site) => $site->slug ??= Str::lower(Str::random(10)));
         static::deleting(fn (Site $site) => File::deleteDirectory($site->dir()));
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    /** Open without password, for the logged-in admin, after unlocking the site, or after unlocking its protected project. */
+    public function isOpenFor(Request $request): bool
+    {
+        return ! $this->password
+            || $request->user()
+            || $request->session()->get("site.{$this->id}")
+            || ($this->project?->password && $request->session()->get("project.{$this->project_id}"));
     }
 
     public function dir(): string
@@ -57,10 +76,17 @@ class Site extends Model
             'name' => $this->name,
             'url' => $this->url(),
             'has_password' => filled($this->password),
+            'project_id' => $this->project_id,
             'file_count' => $files->count(),
             'has_html' => $files->contains(fn ($f) => str_ends_with($f, '.html')),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];
+    }
+
+    /** summary() plus the signed preview URL: admin only, the URL skips the password. */
+    public function adminCard(): array
+    {
+        return [...$this->summary(), 'preview_url' => $this->previewUrl()];
     }
 
     /** Relative paths of all files on disk, e.g. "css/style.css". */
