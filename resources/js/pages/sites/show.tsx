@@ -1,45 +1,34 @@
-import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowLeft, ExternalLink, Lock, LockOpen, Trash2 } from 'lucide-react';
+import { Head, Link, router } from '@inertiajs/react';
+import { ArrowLeft, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { AppLayout } from '@/components/app-layout';
-import { CopyLinkButton } from '@/components/copy-link';
 import { CropFrame } from '@/components/crop-frame';
 import { Dropzone } from '@/components/dropzone';
+import { LinkBar } from '@/components/link-bar';
+import { NameForm, PasswordForm } from '@/components/settings-forms';
 import { SitePreview } from '@/components/site-preview';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip } from '@/components/ui/tooltip';
 import { deleteWithUndo, useIsHidden } from '@/lib/delete-with-undo';
 import { fileCount } from '@/lib/format';
-import type { SiteDetail } from '@/types';
+import type { ProjectOption, SiteDetail } from '@/types';
 
-export default function SiteShow({ site }: { site: SiteDetail }) {
+export default function SiteShow({ site, projects }: { site: SiteDetail; projects: ProjectOption[] }) {
     const empty = site.file_count === 0;
+    const project = projects.find((p) => p.id === site.project_id);
 
     return (
         <AppLayout>
             <Head title={site.name} />
 
-            <Link href="/sites" className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
+            <Link href={project ? `/projects/${project.id}` : '/sites'} className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
                 <ArrowLeft className="size-4" aria-hidden />
-                Alle Sites
+                {project ? project.name : 'Alle Sites'}
             </Link>
             <h1 className="mt-4 text-3xl leading-tight font-semibold tracking-tight text-balance break-words">{site.name}</h1>
 
-            <div className="mt-6 flex flex-wrap items-stretch gap-2">
-                <a
-                    href={site.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex h-10 min-w-0 flex-1 basis-72 items-center gap-2 border bg-sheet px-3 font-mono text-sm hover:border-ink"
-                >
-                    {site.has_password ? <Lock className="size-4 shrink-0 text-ink-muted" aria-label="Passwortgeschützt" /> : null}
-                    <span className="truncate">{site.url}</span>
-                    <ExternalLink className="ml-auto size-4 shrink-0 text-ink-muted" aria-hidden />
-                </a>
-                <CopyLinkButton url={site.url} />
-            </div>
+            <LinkBar url={site.url} locked={site.has_password} />
 
             <div className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
                 <section aria-label="Vorschau und Upload" className="grid content-start gap-8 px-5">
@@ -53,8 +42,16 @@ export default function SiteShow({ site }: { site: SiteDetail }) {
 
                 <div className="grid content-start gap-12">
                     <FileList site={site} />
-                    <NameForm site={site} />
-                    <PasswordForm site={site} />
+                    <NameForm endpoint={`/sites/${site.id}`} id="site" name={site.name} />
+                    <ProjectSelect site={site} projects={projects} />
+                    <PasswordForm
+                        endpoint={`/sites/${site.id}`}
+                        id="site"
+                        url={site.url}
+                        hasPassword={site.has_password}
+                        openHint="Offen. Jeder mit dem Link sieht die Site."
+                        lockedHint="Geschützt. Kunden müssen das Passwort eingeben."
+                    />
                     <section className="grid gap-3 border-t pt-8">
                         <h2 className="font-medium">Site löschen</h2>
                         <p className="text-sm text-ink-muted">Der Link funktioniert danach nicht mehr. Alle Dateien werden entfernt.</p>
@@ -121,80 +118,35 @@ function FileRow({ site, path }: { site: SiteDetail; path: string }) {
     );
 }
 
-function NameForm({ site }: { site: SiteDetail }) {
-    const form = useForm({ name: site.name });
+function ProjectSelect({ site, projects }: { site: SiteDetail; projects: ProjectOption[] }) {
+    if (projects.length === 0) return null;
 
     return (
-        <form
-            className="grid gap-3 border-t pt-8"
-            onSubmit={(e) => {
-                e.preventDefault();
-                form.patch(`/sites/${site.id}`, { preserveScroll: true, onSuccess: () => toast('Name gespeichert') });
-            }}
-        >
-            <Label htmlFor="site-name" className="font-medium">
-                Name
+        <section className="grid gap-3 border-t pt-8">
+            <Label htmlFor="site-project" className="font-medium">
+                Projekt
             </Label>
-            <div className="flex gap-2">
-                <Input id="site-name" name="name" value={form.data.name} onChange={(e) => form.setData('name', e.target.value)} autoComplete="off" required />
-                <Button type="submit" variant="outline" loading={form.processing}>
-                    Speichern
-                </Button>
-            </div>
-            {form.errors.name && <p className="text-sm text-danger">{form.errors.name}</p>}
-        </form>
-    );
-}
-
-function PasswordForm({ site }: { site: SiteDetail }) {
-    const form = useForm({ password: '' });
-
-    return (
-        <form
-            className="grid gap-3 border-t pt-8"
-            onSubmit={(e) => {
-                e.preventDefault();
-                form.patch(`/sites/${site.id}`, {
-                    preserveScroll: true,
-                    onSuccess: () => (form.reset(), toast(site.has_password ? 'Passwort geändert' : 'Passwort gesetzt')),
-                });
-            }}
-        >
-            {/* lets password managers attribute the password to this site */}
-            <input type="text" autoComplete="username" value={site.url} readOnly hidden />
-            <Label htmlFor="site-password" className="font-medium">
-                Passwort
-            </Label>
-            <p className="flex items-center gap-2 text-sm text-ink-muted">
-                {site.has_password ? <Lock className="size-4" aria-hidden /> : <LockOpen className="size-4" aria-hidden />}
-                {site.has_password ? 'Geschützt. Kunden müssen das Passwort eingeben.' : 'Offen. Jeder mit dem Link sieht die Site.'}
-            </p>
-            <div className="flex gap-2">
-                <Input
-                    id="site-password"
-                    name="password"
-                    required
-                    type="password"
-                    value={form.data.password}
-                    onChange={(e) => form.setData('password', e.target.value)}
-                    placeholder={site.has_password ? 'Neues Passwort…' : 'Passwort festlegen…'}
-                    autoComplete="new-password"
-                />
-                <Button type="submit" variant="outline" loading={form.processing}>
-                    {site.has_password ? 'Ändern' : 'Setzen'}
-                </Button>
-            </div>
-            {site.has_password && (
-                <button
-                    type="button"
-                    className="-my-2 cursor-pointer justify-self-start py-2 text-sm text-ink-muted underline underline-offset-4 hover:text-danger"
-                    onClick={() =>
-                        router.patch(`/sites/${site.id}`, { clear_password: true }, { preserveScroll: true, onSuccess: () => toast('Passwort entfernt') })
-                    }
-                >
-                    Passwort entfernen
-                </button>
-            )}
-        </form>
+            <p className="text-sm text-ink-muted">Kunden sehen alle Sites eines Projekts unter einem Link.</p>
+            <select
+                id="site-project"
+                value={site.project_id ?? ''}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    router.patch(
+                        `/sites/${site.id}`,
+                        { project_id: value ? Number(value) : null },
+                        { preserveScroll: true, onSuccess: () => toast(value ? 'Projekt zugeordnet' : 'Aus dem Projekt genommen') },
+                    );
+                }}
+                className="h-10 w-full min-w-0 border border-hairline bg-sheet px-3 text-base text-ink hover:border-ink-muted focus-visible:border-ink focus-visible:outline-none md:text-sm"
+            >
+                <option value="">Kein Projekt</option>
+                {projects.map((p) => (
+                    <option key={p.id} value={p.id}>
+                        {p.name}
+                    </option>
+                ))}
+            </select>
+        </section>
     );
 }

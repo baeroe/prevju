@@ -23,3 +23,7 @@ export function fileCount(n: number): string {
 export function shortUrl(url: string): string {
     return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
+
+export function siteCount(n: number): string {
+    return n === 1 ? '1 Site' : `${n} Sites`;
+}
