@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { SitePreview } from '@/components/site-preview';
 import { cn } from '@/lib/utils';
 import type { SiteCard } from '@/types';
+import { t } from '@/lib/i18n';
 
 const INTERVAL = 4000;
 
@@ -40,7 +41,7 @@ export function ProjectPreview({ sites, paused = false }: { sites: SiteCard[]; p
         return sites.length > 0 ? (
             <SitePreview site={sites[0]} />
         ) : (
-            <div className="grid aspect-[16/10] place-items-center border bg-sheet text-sm text-ink-muted">Noch keine Sites</div>
+            <div className="grid aspect-[16/10] place-items-center border bg-sheet text-sm text-ink-muted">{t('project.preview_empty')}</div>
         );
     }
 

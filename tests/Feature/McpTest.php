@@ -111,7 +111,7 @@ class McpTest extends TestCase
             ->assertOk()
             ->assertSee(['css/style.css', 'index.html']);
 
-        PrevjuServer::tool(Tools\GetSite::class, ['site_id' => 999])->assertHasErrors(['Keine Site mit ID 999.']);
+        PrevjuServer::tool(Tools\GetSite::class, ['site_id' => 999])->assertHasErrors(['No site with ID 999.']);
     }
 
     // --- create / update ---
@@ -168,11 +168,11 @@ class McpTest extends TestCase
         PrevjuServer::tool(Tools\WriteFiles::class, ['site_id' => $this->site->id, 'replace' => true, 'files' => [
             ['path' => 'ok.html', 'content' => 'x'],
             ['path' => '../../evil.php', 'content' => 'x'],
-        ]])->assertHasErrors(['Ungültiger Dateipfad: ../../evil.php']);
+        ]])->assertHasErrors(['Invalid file path: ../../evil.php']);
 
         PrevjuServer::tool(Tools\WriteFiles::class, ['site_id' => $this->site->id, 'files' => [
             ['path' => 'big.html', 'content' => str_repeat('x', 2 * 1024 * 1024 + 1)],
-        ]])->assertHasErrors(['Zusammen mehr als 2 MB. Größere Entwürfe als ZIP über get-upload-url hochladen.']);
+        ]])->assertHasErrors(['More than 2 MB in total. Upload larger drafts as a zip via get-upload-url.']);
 
         $this->assertSame(['css/style.css', 'index.html'], $this->files());
         $this->assertFileDoesNotExist(storage_path('app/evil.php'));
@@ -261,7 +261,7 @@ class McpTest extends TestCase
         $this->assertSame(['index.html'], $this->files());
 
         PrevjuServer::tool(Tools\DeleteFile::class, ['site_id' => $this->site->id, 'path' => 'nope.html'])
-            ->assertHasErrors(['Datei nope.html gibt es in dieser Site nicht.']);
+            ->assertHasErrors(['File nope.html does not exist in this site.']);
     }
 
     public function test_clear_files_keeps_site_and_password(): void

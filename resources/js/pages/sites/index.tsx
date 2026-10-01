@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { useIsHidden } from '@/lib/delete-with-undo';
 import { shortUrl, siteCount, timeAgo } from '@/lib/format';
 import type { ProjectCard, SiteCard } from '@/types';
+import { path, t } from '@/lib/i18n';
 
 const GRID = 'mt-6 grid grid-cols-[repeat(auto-fill,minmax(min(100%,17rem),1fr))] gap-x-12 gap-y-14 px-5';
 
@@ -35,18 +36,18 @@ export default function SitesIndex({ projects, sites }: { projects: ProjectCard[
                 )
             }
         >
-            <Head title="Sites" />
+            <Head title={t('sites.title')} />
 
             <div className="flex flex-wrap items-end justify-between gap-4">
                 <h1 className="flex items-baseline gap-3 text-3xl leading-none font-semibold tracking-tight">
-                    Sites
+                    {t('sites.title')}
                     {total > 0 && <span className="font-mono text-base font-normal text-ink-muted">{total}</span>}
                 </h1>
                 {projects.length + sites.length > 3 && (
                     <label className="relative w-full sm:w-64">
-                        <span className="sr-only">Sites und Projekte durchsuchen</span>
+                        <span className="sr-only">{t('sites.search_label')}</span>
                         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted" aria-hidden />
-                        <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Suchen…" className="pl-9" />
+                        <Input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('common.search')} className="pl-9" />
                     </label>
                 )}
             </div>
@@ -55,9 +56,9 @@ export default function SitesIndex({ projects, sites }: { projects: ProjectCard[
                 <EmptyState />
             ) : shownProjects.length + shownSites.length === 0 ? (
                 <p className="mt-16 text-ink-muted">
-                    Nichts passt zu „{query}“.{' '}
+                    {t('sites.no_match', { query })}{' '}
                     <button className="cursor-pointer text-ink underline underline-offset-4" onClick={() => setQuery('')}>
-                        Suche leeren
+                        {t('sites.clear_search')}
                     </button>
                 </p>
             ) : (
@@ -65,7 +66,7 @@ export default function SitesIndex({ projects, sites }: { projects: ProjectCard[
                     {shownProjects.length > 0 && (
                         <section aria-labelledby="projects-heading" className="mt-12">
                             <h2 id="projects-heading" className="font-medium text-ink-muted">
-                                Projekte
+                                {t('sites.projects')}
                             </h2>
                             <ul className={GRID}>
                                 {shownProjects.map((project) => (
@@ -77,7 +78,7 @@ export default function SitesIndex({ projects, sites }: { projects: ProjectCard[
                     {shownSites.length > 0 && (
                         <section aria-labelledby="sites-heading" className="mt-12">
                             <h2 id="sites-heading" className={projects.length > 0 ? 'font-medium text-ink-muted' : 'sr-only'}>
-                                Sites ohne Projekt
+                                {t('sites.without_project')}
                             </h2>
                             <ul className={GRID}>
                                 {shownSites.map((site) => (
@@ -105,7 +106,7 @@ function ProjectTile({ project }: { project: ProjectCard }) {
             onFocus={() => setPaused(true)}
             onBlur={() => setPaused(false)}
         >
-            <Link href={`/projects/${project.id}`} className="block" aria-label={`Projekt ${project.name} öffnen`}>
+            <Link href={path(`/projects/${project.id}`)} className="block" aria-label={t('sites.open_project', { name: project.name })}>
                 <CropFrame>
                     <ProjectPreview sites={project.sites} paused={paused} />
                 </CropFrame>
@@ -113,7 +114,7 @@ function ProjectTile({ project }: { project: ProjectCard }) {
             <div className="mt-8 flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <h3 className="truncate font-medium">
-                        <Link href={`/projects/${project.id}`} className="hover:underline hover:underline-offset-4">
+                        <Link href={path(`/projects/${project.id}`)} className="hover:underline hover:underline-offset-4">
                             {project.name}
                         </Link>
                     </h3>
@@ -131,10 +132,10 @@ function ProjectTile({ project }: { project: ProjectCard }) {
                 {project.has_password && (
                     <span className="inline-flex items-center gap-1">
                         <Lock className="size-3" aria-hidden />
-                        Passwort
+                        {t('common.password')}
                     </span>
                 )}
-                <span>geändert {timeAgo(project.updated_at)}</span>
+                <span>{t('common.changed', { time: timeAgo(project.updated_at) })}</span>
             </p>
         </li>
     );
@@ -143,15 +144,15 @@ function ProjectTile({ project }: { project: ProjectCard }) {
 function EmptyState() {
     return (
         <CropFrame className="mt-14 mx-5 grid max-w-xl gap-4 border bg-sheet p-10">
-            <h2 className="text-xl font-semibold tracking-tight">Noch keine Entwürfe</h2>
+            <h2 className="text-xl font-semibold tracking-tight">{t('sites.empty_title')}</h2>
             <p className="max-w-[48ch] text-ink-muted">
-                Leg eine Site an, zieh den Ordner mit deinem HTML-Entwurf hinein und schick den Link an deinen Kunden.
+                {t('sites.empty_text')}
             </p>
             <NewSiteDialog
                 trigger={
                     <Button className="justify-self-start">
                         <Plus />
-                        Erste Site anlegen
+                        {t('sites.empty_cta')}
                     </Button>
                 }
             />

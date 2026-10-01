@@ -139,7 +139,7 @@ class Site extends Model
     /** Relative path or a validation error (shown in the admin and passed on to MCP clients). */
     public static function validPath(string $path): string
     {
-        return self::cleanPath($path) ?? throw ValidationException::withMessages(['path' => "Ungültiger Dateipfad: {$path}"]);
+        return self::cleanPath($path) ?? throw ValidationException::withMessages(['path' => __('files.invalid_path', ['path' => $path])]);
     }
 
     /**
@@ -190,7 +190,7 @@ class Site extends Model
     {
         $zip = new ZipArchive;
         if ($zip->open($zipPath) !== true) {
-            throw ValidationException::withMessages(['file' => 'ZIP-Datei lässt sich nicht öffnen.']);
+            throw ValidationException::withMessages(['file' => __('files.zip_unreadable')]);
         }
 
         $names = [];

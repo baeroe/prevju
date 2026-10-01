@@ -1,6 +1,7 @@
 import { FileCode2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { SiteCard } from '@/types';
+import { t } from '@/lib/i18n';
 
 const VIEWPORT = 1280;
 
@@ -26,7 +27,7 @@ export function SitePreview({ site }: { site: SiteCard }) {
                 scale > 0 && (
                     <iframe
                         src={`${site.preview_url}?v=${encodeURIComponent(site.updated_at)}`}
-                        title={`Vorschau ${site.name}`}
+                        title={t('site.preview_of', { name: site.name })}
                         loading="lazy"
                         // no allow-same-origin: draft scripts must not reach the admin page or its session
                         sandbox="allow-scripts"
@@ -39,7 +40,7 @@ export function SitePreview({ site }: { site: SiteCard }) {
             ) : (
                 <div className="grid h-full place-items-center content-center gap-2 text-sm text-ink-muted">
                     <FileCode2 className="size-5" aria-hidden />
-                    {site.file_count ? 'Keine HTML-Datei' : 'Noch keine Dateien'}
+                    {site.file_count ? t('site.no_html') : t('site.no_files')}
                 </div>
             )}
         </div>

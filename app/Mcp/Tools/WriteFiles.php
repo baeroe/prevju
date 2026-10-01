@@ -30,7 +30,7 @@ class WriteFiles extends SiteTool
 
         $files = collect($data['files'])->mapWithKeys(fn ($f) => [$f['path'] => $f['content']])->all();
         if (array_sum(array_map('strlen', $files)) > self::MAX_BYTES) {
-            throw ValidationException::withMessages(['files' => 'Zusammen mehr als 2 MB. Größere Entwürfe als ZIP über get-upload-url hochladen.']);
+            throw ValidationException::withMessages(['files' => 'More than 2 MB in total. Upload larger drafts as a zip via get-upload-url.']);
         }
 
         $site->writeFiles($files, $data['replace'] ?? false);

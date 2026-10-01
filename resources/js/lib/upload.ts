@@ -1,3 +1,5 @@
+import { t } from '@/lib/i18n';
+
 export type UploadItem = { file: File; path: string };
 
 function xsrfToken(): string {
@@ -19,16 +21,16 @@ export function uploadFile(url: string, item: UploadItem, onProgress: (ratio: nu
         xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
         xhr.onload = () => {
             if (xhr.status < 300) return resolve();
-            let message = `Upload fehlgeschlagen (${xhr.status}).`;
+            let message = t('upload.failed', { status: xhr.status });
             try {
                 const json = JSON.parse(xhr.responseText);
                 message = Object.values(json.errors ?? {}).flat()[0] as string ?? json.message ?? message;
             } catch {
-                if (xhr.status === 413) message = 'Datei ist zu groß für den Server.';
+                if (xhr.status === 413) message = t('upload.too_large');
             }
             reject(new Error(message));
         };
-        xhr.onerror = () => reject(new Error('Keine Verbindung zum Server.'));
+        xhr.onerror = () => reject(new Error(t('upload.offline')));
         xhr.send(body);
     });
 }

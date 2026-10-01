@@ -20,7 +20,7 @@ class DeleteFile extends SiteTool
         $path = Site::validPath($request->validate(['path' => 'required|string'])['path']);
 
         if (! $site->fileList()->contains($path)) {
-            throw ValidationException::withMessages(['path' => "Datei {$path} gibt es in dieser Site nicht."]);
+            throw ValidationException::withMessages(['path' => "File {$path} does not exist in this site."]);
         }
         $site->deleteFile($path);
 

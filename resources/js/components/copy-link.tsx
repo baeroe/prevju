@@ -3,14 +3,15 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
+import { t } from '@/lib/i18n';
 
 async function copy(url: string, done: () => void) {
     try {
         await navigator.clipboard.writeText(url);
-        toast('Link kopiert');
+        toast(t('common.link_copied'));
         done();
     } catch {
-        toast.error('Kopieren nicht erlaubt. Link bitte markieren und von Hand kopieren.');
+        toast.error(t('common.copy_failed'));
     }
 }
 
@@ -22,8 +23,8 @@ function useCopied() {
 export function CopyLinkIcon({ url }: { url: string }) {
     const [copied, flash] = useCopied();
     return (
-        <Tooltip label="Link kopieren">
-            <Button variant="ghost" size="icon-sm" aria-label="Link kopieren" onClick={() => copy(url, flash)}>
+        <Tooltip label={t('common.copy_link')}>
+            <Button variant="ghost" size="icon-sm" aria-label={t('common.copy_link')} onClick={() => copy(url, flash)}>
                 {copied ? <Check /> : <Copy />}
             </Button>
         </Tooltip>
@@ -35,7 +36,7 @@ export function CopyLinkButton({ url }: { url: string }) {
     return (
         <Button onClick={() => copy(url, flash)}>
             {copied ? <Check /> : <Copy />}
-            {copied ? 'Kopiert' : 'Link kopieren'}
+            {copied ? t('common.copied') : t('common.copy_link')}
         </Button>
     );
 }

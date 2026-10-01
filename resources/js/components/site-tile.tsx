@@ -8,13 +8,14 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { useIsHidden } from '@/lib/delete-with-undo';
 import { fileCount, shortUrl, timeAgo } from '@/lib/format';
 import type { SiteCard } from '@/types';
+import { path, t } from '@/lib/i18n';
 
 export function SiteTile({ site }: { site: SiteCard }) {
     if (useIsHidden(`site:${site.id}`)) return null;
 
     return (
         <li className="group min-w-0">
-            <Link href={`/sites/${site.id}`} className="block" aria-label={`${site.name} öffnen`}>
+            <Link href={path(`/sites/${site.id}`)} className="block" aria-label={t('common.open_name', { name: site.name })}>
                 <CropFrame>
                     <SitePreview site={site} />
                 </CropFrame>
@@ -22,7 +23,7 @@ export function SiteTile({ site }: { site: SiteCard }) {
             <div className="mt-8 flex items-start justify-between gap-2">
                 <div className="min-w-0">
                     <h3 className="truncate font-medium">
-                        <Link href={`/sites/${site.id}`} className="hover:underline hover:underline-offset-4">
+                        <Link href={path(`/sites/${site.id}`)} className="hover:underline hover:underline-offset-4">
                             {site.name}
                         </Link>
                     </h3>
@@ -30,9 +31,9 @@ export function SiteTile({ site }: { site: SiteCard }) {
                 </div>
                 <div className="-mt-1.5 -mr-2 flex shrink-0">
                     <CopyLinkIcon url={site.url} />
-                    <Tooltip label="Im neuen Tab öffnen">
+                    <Tooltip label={t('common.open_new_tab')}>
                         <Button variant="ghost" size="icon-sm" asChild>
-                            <a href={site.url} target="_blank" rel="noreferrer" aria-label={`${site.name} im neuen Tab öffnen`}>
+                            <a href={site.url} target="_blank" rel="noreferrer" aria-label={t('common.open_name_new_tab', { name: site.name })}>
                                 <ExternalLink />
                             </a>
                         </Button>
@@ -44,10 +45,10 @@ export function SiteTile({ site }: { site: SiteCard }) {
                 {site.has_password && (
                     <span className="inline-flex items-center gap-1">
                         <Lock className="size-3" aria-hidden />
-                        Passwort
+                        {t('common.password')}
                     </span>
                 )}
-                <span>geändert {timeAgo(site.updated_at)}</span>
+                <span>{t('common.changed', { time: timeAgo(site.updated_at) })}</span>
             </p>
         </li>
     );

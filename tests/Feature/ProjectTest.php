@@ -85,7 +85,8 @@ class ProjectTest extends TestCase
         $other = Site::create(['name' => 'Fremd', 'slug' => 'other1', 'password' => Hash::make('x')]);
         $other->writeFiles(['index.html' => 'x']);
 
-        $this->get('/project/proj123')->assertUnauthorized()->assertSee('Bäckerei Kurz')->assertSee('Entwürfe öffnen');
+        $this->get('/project/proj123')->assertUnauthorized()->assertSee('Bäckerei Kurz')->assertSee('Open drafts');
+        $this->withCookie('locale', 'de')->get('/project/proj123')->assertSee('Entwürfe öffnen');
         $this->get('/s/projv1/')->assertUnauthorized();
         $this->post('/project/proj123', ['password' => 'falsch'])->assertSessionHasErrors('password');
         $this->post('/project/proj123', ['password' => 'kunde'])->assertRedirect($project->url());

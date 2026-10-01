@@ -18,8 +18,8 @@ class SiteController extends Controller
             return response()->view('site-password', [
                 'name' => $site->name,
                 'action' => route('site.unlock', $site->slug),
-                'intro' => 'Entwurf zur Ansicht',
-                'button' => 'Entwurf öffnen',
+                'intro' => __('client.intro_site'),
+                'button' => __('client.open_site'),
             ], 401);
         }
 
@@ -63,7 +63,7 @@ class SiteController extends Controller
         $site = Site::where('slug', $slug)->firstOrFail();
 
         if (! Hash::check($request->input('password', ''), $site->password)) {
-            return back()->withErrors(['password' => 'Falsches Passwort.']);
+            return back()->withErrors(['password' => __('password.wrong')]);
         }
 
         $request->session()->put("site.{$site->id}", true);

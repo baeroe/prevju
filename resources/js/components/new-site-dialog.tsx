@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { path, t } from '@/lib/i18n';
 
 export function NewSiteDialog({ trigger, projectId }: { trigger?: React.ReactNode; projectId?: number }) {
     return (
@@ -12,17 +13,17 @@ export function NewSiteDialog({ trigger, projectId }: { trigger?: React.ReactNod
                 trigger ?? (
                     <Button>
                         <Plus />
-                        <span className="max-sm:sr-only">Neue Site</span>
+                        <span className="max-sm:sr-only">{t('site.new')}</span>
                     </Button>
                 )
             }
-            title="Neue Site"
-            description="Dateien lädst du im nächsten Schritt hoch."
-            url="/sites"
+            title={t('site.new')}
+            description={t('site.new_hint')}
+            url={path('/sites')}
             projectId={projectId}
-            placeholder="z. B. Relaunch Bäckerei Kurz…"
-            passwordHint="Ohne Passwort sieht jeder mit dem Link die Site."
-            submit="Site anlegen"
+            placeholder={t('site.name_placeholder')}
+            passwordHint={t('site.new_password_hint')}
+            submit={t('site.create')}
         />
     );
 }
@@ -33,15 +34,15 @@ export function NewProjectDialog() {
             trigger={
                 <Button variant="outline">
                     <FolderPlus />
-                    <span className="max-sm:sr-only">Neues Projekt</span>
+                    <span className="max-sm:sr-only">{t('project.new')}</span>
                 </Button>
             }
-            title="Neues Projekt"
-            description="Ein Link für den Kunden, der alle Sites des Projekts zeigt, neueste zuerst."
-            url="/projects"
-            placeholder="z. B. Bäckerei Kurz…"
-            passwordHint="Ein Passwort öffnet alle Sites des Projekts. Ohne Passwort sieht jeder mit dem Link die Liste."
-            submit="Projekt anlegen"
+            title={t('project.new')}
+            description={t('project.new_hint')}
+            url={path('/projects')}
+            placeholder={t('project.name_placeholder')}
+            passwordHint={t('project.new_password_hint')}
+            submit={t('project.create')}
         />
     );
 }
@@ -76,7 +77,7 @@ function CreateDialog({ trigger, title, description, url, projectId, placeholder
                     }}
                 >
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">{t('common.name')}</Label>
                         <Input
                             id="name"
                             name="name"
@@ -92,7 +93,7 @@ function CreateDialog({ trigger, title, description, url, projectId, placeholder
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="new-password">
-                            Passwort <span className="font-normal text-ink-muted">(optional)</span>
+                            {t('common.password')} <span className="font-normal text-ink-muted">{t('common.optional')}</span>
                         </Label>
                         <Input
                             id="new-password"

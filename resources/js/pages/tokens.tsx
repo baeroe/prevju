@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip } from '@/components/ui/tooltip';
 import { timeAgo } from '@/lib/format';
+import { path, t } from '@/lib/i18n';
 
 type Token = { id: number; name: string; created_at: string; last_used_at: string | null };
 
@@ -22,24 +23,23 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
             <Head title="MCP" />
             <h1 className="text-3xl leading-none font-semibold tracking-tight">MCP</h1>
             <p className="mt-4 max-w-[62ch] text-ink-muted">
-                Mit einem Token kann Claude Sites anlegen, Entwürfe hochladen und verwalten. Jedes Token hat dieselben Rechte wie dein Login. Leg pro
-                Gerät eins an, dann kannst du es einzeln widerrufen.
+                {t('tokens.intro')}
             </p>
 
             <div className="mt-12 grid gap-14 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
                 <section className="grid content-start gap-8">
                     {new_token && (
                         <div className="grid gap-3 border border-ink bg-sheet p-5" role="status">
-                            <h2 className="font-medium">Neues Token, nur jetzt sichtbar</h2>
-                            <CopyField value={new_token} label="Token kopieren" />
+                            <h2 className="font-medium">{t('tokens.new_visible')}</h2>
+                            <CopyField value={new_token} label={t('tokens.copy_token')} />
                         </div>
                     )}
 
                     <div className="grid gap-3">
-                        <h2 className="font-medium">Einrichten</h2>
+                        <h2 className="font-medium">{t('tokens.setup')}</h2>
                         <div className="flex flex-wrap gap-x-6 gap-y-3">
                             <Segmented
-                                label="Client"
+                                label={t('tokens.client')}
                                 value={client}
                                 onChange={setClient}
                                 options={[
@@ -48,19 +48,20 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
                                 ]}
                             />
                             <Segmented
-                                label="Gültig für"
+                                label={t('tokens.scope')}
                                 value={scope}
                                 onChange={setScope}
                                 options={[
-                                    ['user', 'User'],
-                                    ['local', 'Lokal'],
+                                    ['user', t('tokens.scope_user')],
+                                    ['local', t('tokens.scope_local')],
                                 ]}
                             />
                         </div>
-                        <CopyField value={setup.command} label="Befehl kopieren" />
+                        <CopyField value={setup.command} label={t('tokens.copy_command')} />
                         <p className="text-sm text-ink-muted">{setup.hint}</p>
                         <p className="text-sm text-ink-muted">
-                            Endpoint <span className="font-mono text-xs text-ink">{mcp_url}</span>, Authentifizierung per Bearer-Token.
+                            {t('tokens.endpoint')} <span className="font-mono text-xs text-ink">{mcp_url}</span>
+                            {t('tokens.auth')}
                         </p>
                     </div>
                 </section>
@@ -70,11 +71,11 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
                         className="grid gap-3"
                         onSubmit={(e) => {
                             e.preventDefault();
-                            form.post('/tokens', { preserveScroll: true, onSuccess: () => form.reset() });
+                            form.post(path('/tokens'), { preserveScroll: true, onSuccess: () => form.reset() });
                         }}
                     >
                         <Label htmlFor="token-name" className="font-medium">
-                            Neues Token
+                            {t('tokens.new')}
                         </Label>
                         <div className="flex gap-2">
                             <Input
@@ -82,12 +83,12 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
                                 name="name"
                                 value={form.data.name}
                                 onChange={(e) => form.setData('name', e.target.value)}
-                                placeholder="z. B. MacBook…"
+                                placeholder={t('tokens.name_placeholder')}
                                 autoComplete="off"
                                 required
                             />
                             <Button type="submit" variant="outline" loading={form.processing}>
-                                Anlegen
+                                {t('tokens.create')}
                             </Button>
                         </div>
                         {form.errors.name && <p className="text-sm text-danger">{form.errors.name}</p>}
@@ -95,32 +96,32 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
 
                     <div className="grid gap-3">
                         <h2 className="flex items-baseline justify-between font-medium">
-                            Aktive Tokens
+                            {t('tokens.active')}
                             <span className="font-mono text-xs font-normal text-ink-muted">{tokens.length}</span>
                         </h2>
                         {tokens.length === 0 ? (
-                            <p className="text-sm text-ink-muted">Noch keine. Ohne Token nimmt der MCP-Endpoint keine Anfragen an.</p>
+                            <p className="text-sm text-ink-muted">{t('tokens.none')}</p>
                         ) : (
                             <ul className="border-t">
-                                {tokens.map((t) => (
-                                    <li key={t.id} className="flex items-center gap-3 border-b py-2">
+                                {tokens.map((token) => (
+                                    <li key={token.id} className="flex items-center gap-3 border-b py-2">
                                         <KeyRound className="size-4 shrink-0 text-ink-muted" aria-hidden />
                                         <div className="min-w-0 flex-1">
-                                            <p className="truncate text-sm font-medium">{t.name}</p>
+                                            <p className="truncate text-sm font-medium">{token.name}</p>
                                             <p className="text-xs text-ink-muted">
-                                                {t.last_used_at ? `zuletzt benutzt ${timeAgo(t.last_used_at)}` : 'noch nie benutzt'}
+                                                {token.last_used_at ? t('tokens.last_used', { time: timeAgo(token.last_used_at) }) : t('tokens.never_used')}
                                             </p>
                                         </div>
-                                        <Tooltip label="Widerrufen">
+                                        <Tooltip label={t('tokens.revoke')}>
                                             <Button
                                                 variant="ghost"
                                                 size="icon-sm"
-                                                aria-label={`Token ${t.name} widerrufen`}
+                                                aria-label={t('tokens.revoke_name', { name: token.name })}
                                                 className="text-ink-muted hover:text-danger"
                                                 onClick={() =>
-                                                    router.delete(`/tokens/${t.id}`, {
+                                                    router.delete(path(`/tokens/${token.id}`), {
                                                         preserveScroll: true,
-                                                        onSuccess: () => toast(`Token „${t.name}“ widerrufen`),
+                                                        onSuccess: () => toast(t('tokens.revoked', { name: token.name })),
                                                     })
                                                 }
                                             >
@@ -147,8 +148,8 @@ function setupFor(client: Client, scope: Scope, url: string, token: string): { c
             command: `claude mcp add --transport http --scope ${scope} prevju ${url} --header "Authorization: Bearer ${token}"`,
             hint:
                 scope === 'user'
-                    ? 'In allen Projekten verfügbar. Gespeichert in ~/.claude.json.'
-                    : 'Nur im Projekt, in dem du den Befehl ausführst. Gespeichert in ~/.claude.json, nicht im Repo.',
+                    ? t('tokens.hint_claude_user')
+                    : t('tokens.hint_claude_local'),
         };
     }
 
@@ -160,8 +161,8 @@ function setupFor(client: Client, scope: Scope, url: string, token: string): { c
         command: `${scope === 'local' ? 'mkdir -p .codex && ' : ''}printf '\\n${block.replaceAll('\n', '\\n')}\\n' >> ${file}`,
         hint:
             scope === 'user'
-                ? 'In allen Projekten verfügbar. Hängt den Eintrag an ~/.codex/config.toml an.'
-                : 'Nur in diesem Projekt, und nur wenn Codex es als vertrauenswürdig kennt. Das Token steht dann in .codex/config.toml: die Datei in .gitignore aufnehmen.',
+                ? t('tokens.hint_codex_user')
+                : t('tokens.hint_codex_local'),
     };
 }
 
@@ -209,11 +210,11 @@ function CopyField({ value, label }: { value: string; label: string }) {
                 onClick={async () => {
                     await navigator.clipboard.writeText(value);
                     setCopied(true);
-                    toast('Kopiert');
+                    toast(t('common.copied'));
                     setTimeout(() => setCopied(false), 1500);
                 }}
             >
-                {copied ? 'Kopiert' : label}
+                {copied ? t('common.copied') : label}
             </Button>
         </div>
     );

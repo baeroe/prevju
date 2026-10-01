@@ -19,8 +19,8 @@ class ProjectController extends Controller
             return response()->view('site-password', [
                 'name' => $project->name,
                 'action' => route('project.unlock', $project->slug),
-                'intro' => 'Entwürfe zur Ansicht',
-                'button' => 'Entwürfe öffnen',
+                'intro' => __('client.intro_project'),
+                'button' => __('client.open_project'),
             ], 401);
         }
 
@@ -43,7 +43,7 @@ class ProjectController extends Controller
         $project = Project::where('slug', $slug)->firstOrFail();
 
         if (! Hash::check($request->input('password', ''), $project->password)) {
-            return back()->withErrors(['password' => 'Falsches Passwort.']);
+            return back()->withErrors(['password' => __('password.wrong')]);
         }
 
         $request->session()->put("project.{$project->id}", true);

@@ -18,7 +18,7 @@ class LoginController extends Controller
         $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
 
         if (! Auth::attempt($credentials, remember: true)) {
-            return back()->withErrors(['email' => 'E-Mail oder Passwort stimmt nicht.'])->onlyInput('email');
+            return back()->withErrors(['email' => __('login.failed')])->onlyInput('email');
         }
 
         $request->session()->regenerate();

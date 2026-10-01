@@ -14,6 +14,6 @@ abstract class SiteTool extends Tool
     {
         $id = $request->validate(['site_id' => 'required|integer'])['site_id'];
 
-        return Site::find($id) ?? throw ValidationException::withMessages(['site_id' => "Keine Site mit ID {$id}."]);
+        return Site::find($id) ?? throw ValidationException::withMessages(['site_id' => "No site with ID {$id}."]);
     }
 }
