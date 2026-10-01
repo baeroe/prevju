@@ -10,6 +10,11 @@ Version gepinnt? Dann zuerst den Tag in der `docker-compose.yml` ändern. Alle V
 
 ## Hinweise pro Version
 
+### 0.4
+
+- Neu: [Projekte](/de/projects). Ein Kunden-Link und ein Passwort für mehrere Sites, neueste zuerst. Die Datenbank migriert beim Start, beim Update ist nichts zu tun. Verbundene MCP-Clients sehen die neuen Tools nach einem Reconnect.
+- Passwortseiten erlauben jetzt 10 Versuche pro Minute und IP.
+
 ### 0.3.2
 
 - `get-compatibility` liefert jetzt dieselbe Seite wie [Was funktioniert](/de/what-works) auf prevju.dev, Agenten und Doku sagen also immer dasselbe. Beim Update ist nichts zu tun.

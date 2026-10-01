@@ -58,3 +58,4 @@ Schneidmarken (`CropMarks`): vier Winkel außerhalb der Ecken jeder Vorschau, de
 - 2026-09-25: Sites als Cards mit Live-Vorschau (Nutzerwunsch). Vorschau = skaliertes, nicht interaktives iframe der echten Site, kein Screenshot-Dienst im Container.
 - 2026-09-25: Signal-Buttons mit Tinte statt Weiß beschriftet — Weiß auf Orange fällt durch den Kontrast.
 - 2026-09-25: Fokusring in Tinte statt Signal-Orange — Orange auf Papier erreicht keine 3:1 für Fokus-Indikatoren (web-design-guidelines, A11y sticht DESIGN.md).
+- 2026-10-01: Projekte als Cards wie Sites; die Vorschau blättert alle 4 s durch die Sites des Projekts (Nutzerwunsch). Pausiert bei Hover/Fokus, steht bei reduzierter Bewegung still. Unter `sm` zeigen „Neues Projekt“/„Neue Site“ im Header nur das Icon.

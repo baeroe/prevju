@@ -17,6 +17,8 @@ Before uploading a built app, check [What works](/what-works).
 
 Every site can have its own password. Clients see an unlock page with the site's name. Changing the password logs nobody out who already unlocked, removing it makes the site public.
 
+Several drafts for the same client? Put them into a [project](/projects): one link, one password.
+
 ## Preview in the admin
 
 Each site card shows a live preview of the draft. Previews run sandboxed, scripts in a draft can't reach the admin.

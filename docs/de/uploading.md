@@ -17,6 +17,8 @@ Bevor du eine gebaute App hochlädst, wirf einen Blick auf [Was funktioniert](/d
 
 Jede Site kann ein eigenes Passwort haben. Kunden sehen eine Freischalt-Seite mit dem Namen der Site. Eine Passwortänderung meldet niemanden ab, der bereits freigeschaltet hat; ohne Passwort ist die Site öffentlich.
 
+Mehrere Entwürfe für denselben Kunden? Leg sie in ein [Projekt](/de/projects): ein Link, ein Passwort.
+
 ## Vorschau im Admin
 
 Jede Site-Karte zeigt eine Live-Vorschau des Entwurfs. Die Vorschau läuft in einer Sandbox, Skripte im Entwurf kommen nicht an den Admin.
