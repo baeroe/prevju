@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Site;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -94,5 +95,13 @@ class LocaleTest extends TestCase
 
         $this->assertGreaterThan(50, $used->count(), 'texts should go through t()/__()');
         $this->assertSame([], $used->diff(array_keys($en))->values()->all());
+    }
+
+    public function test_login_keeps_the_language_it_was_done_in(): void
+    {
+        User::factory()->create(['email' => 'a@b.de', 'password' => Hash::make('secret123')]);
+
+        $this->get('/en/sites/1')->assertRedirect('/en/login');
+        $this->post('/de/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect(url('/de/sites/1'));
     }
 }
