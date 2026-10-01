@@ -11,13 +11,13 @@ Create a site in the admin, then drop files onto it.
 
 Uploads run one file at a time with progress; failed files can be retried. Deleted files and sites can be restored for five seconds via *Undo*.
 
-Before uploading a built app, check [What works](/what-works).
+Before uploading a built app, check [What works](/en/what-works).
 
 ## Passwords
 
 Every site can have its own password. Clients see an unlock page with the site's name. Changing the password logs nobody out who already unlocked, removing it makes the site public.
 
-Several drafts for the same client? Put them into a [project](/projects): one link, one password.
+Several drafts for the same client? Put them into a [project](/en/projects): one link, one password.
 
 ## Preview in the admin
 

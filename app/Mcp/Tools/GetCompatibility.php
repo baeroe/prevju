@@ -23,6 +23,6 @@ class GetCompatibility extends Tool
     /** The "What works" docs page (prevju.dev/what-works), so docs and agents read the same source. */
     public static function section(): string
     {
-        return trim(file_get_contents(base_path('docs/what-works.md')));
+        return trim(file_get_contents(base_path('docs/en/what-works.md')));
     }
 }

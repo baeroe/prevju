@@ -46,5 +46,5 @@ Open `APP_URL` and log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`. The admin user 
 
 - **Data:** SQLite database, uploaded sites and the generated `APP_KEY` are in the `prevju-data` volume. Containers can be recreated freely, the volume stays. Don't run `docker compose down -v`, that deletes it.
 - **Client links:** `APP_URL/s/<slug>/`, one random slug per site.
-- **Port:** `7738` on the host, `8080` inside the container. Put a reverse proxy in front for HTTPS, see [Reverse proxy](/reverse-proxy).
+- **Port:** `7738` on the host, `8080` inside the container. Put a reverse proxy in front for HTTPS, see [Reverse proxy](/en/reverse-proxy).
 - **Versions:** `latest` follows every release. Pin one with `image: baeroe/prevju:0.3.1`.

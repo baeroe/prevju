@@ -45,22 +45,24 @@ export default defineConfig({
     ],
     appearance: false,
     // agents get the English docs only, without the legal pages
-    vite: { plugins: [llmstxt({ ignoreFiles: ['de/**', 'imprint.md', 'privacy.md'] })] },
+    vite: { plugins: [llmstxt({ workDir: 'en', ignoreFiles: ['imprint.md', 'privacy.md'] })] },
 
     locales: {
         root: {
             label: 'English',
             lang: 'en',
+            // English lives under /en like German under /de; old links without a prefix are redirected in the theme
+            link: '/en/',
             description: 'Self-hosted previews for HTML drafts. Upload, send the link, optionally with a password.',
             themeConfig: {
                 nav: [
-                    { text: 'Guide', link: '/setup' },
+                    { text: 'Guide', link: '/en/setup' },
                     { text: 'Releases', link: 'https://github.com/baeroe/prevju/releases' },
                 ],
-                sidebar: pages('', en),
+                sidebar: pages('/en', en),
                 editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Edit this page' },
                 footer: {
-                    message: 'Released under the MIT License. <a href="/imprint">Imprint</a> · <a href="/privacy">Privacy policy</a>',
+                    message: 'Released under the MIT License. <a href="/en/imprint">Imprint</a> · <a href="/en/privacy">Privacy policy</a>',
                     copyright: '© 2026 Rafael Haußmann',
                 },
             },

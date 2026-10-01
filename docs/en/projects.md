@@ -26,4 +26,4 @@ Deleting a project removes only the project and its link. Its sites stay and sho
 
 ## With an agent
 
-Over [MCP](/mcp), agents use `create-project`, `list-projects` and `project_id` on `create-site` to put each version into the project.
+Over [MCP](/en/mcp), agents use `create-project`, `list-projects` and `project_id` on `create-site` to put each version into the project.

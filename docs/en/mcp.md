@@ -26,16 +26,16 @@ A token has the same rights as the admin login. Create one per device so you can
 
 | Tool | What it does |
 |---|---|
-| `get-compatibility` | Returns [What works](/what-works). Agents call it before uploading |
+| `get-compatibility` | Returns [What works](/en/what-works). Agents call it before uploading |
 | `list-sites`, `get-site` | Sites with link, password status and files |
 | `create-site` | New site, optionally with a password and in a project |
 | `update-site` | Rename, set or remove the password, move into or out of a project |
-| `list-projects`, `create-project` | [Projects](/projects): one client link for several sites |
+| `list-projects`, `create-project` | [Projects](/en/projects): one client link for several sites |
 | `write-files` | Write generated text files (HTML, CSS, JS) directly |
 | `get-upload-url` | Signed 15-minute URL to upload a zip or binary file with `curl` |
 | `delete-file`, `clear-files`, `delete-site` | Destructive, no undo |
 
-For a new version of a draft, agents upload with `replace`: the live site switches over in one step and is never empty in between. A failed upload changes nothing. To keep versions side by side for the client, agents create each version as its own site in a [project](/projects).
+For a new version of a draft, agents upload with `replace`: the live site switches over in one step and is never empty in between. A failed upload changes nothing. To keep versions side by side for the client, agents create each version as its own site in a [project](/en/projects).
 
 ## Limits
 

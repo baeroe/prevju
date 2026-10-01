@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Get started
-      link: /setup
+      link: /en/setup
     - theme: alt
       text: GitHub
       link: https://github.com/baeroe/prevju

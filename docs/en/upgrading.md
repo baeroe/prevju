@@ -12,16 +12,16 @@ Pinned a version? Change the tag in `docker-compose.yml` first. All versions and
 
 ### 0.4
 
-- New: [projects](/projects). One client link and one password for several sites, newest first. The database migrates on start, nothing to change on upgrade. Connected MCP clients see the new tools after a reconnect.
+- New: [projects](/en/projects). One client link and one password for several sites, newest first. The database migrates on start, nothing to change on upgrade. Connected MCP clients see the new tools after a reconnect.
 - Password pages now allow 10 attempts per minute and IP.
 
 ### 0.3.2
 
-- `get-compatibility` now returns the same page as [What works](/what-works) on prevju.dev, so agents and the docs always agree. Nothing to change on upgrade.
+- `get-compatibility` now returns the same page as [What works](/en/what-works) on prevju.dev, so agents and the docs always agree. Nothing to change on upgrade.
 
 ### 0.3.1
 
-- New MCP tool `get-compatibility`: agents check a draft against [What works](/what-works) before uploading. Connected MCP clients see it after a reconnect. Nothing to change on upgrade.
+- New MCP tool `get-compatibility`: agents check a draft against [What works](/en/what-works) before uploading. Connected MCP clients see it after a reconnect. Nothing to change on upgrade.
 
 ### 0.3
 
