@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\SiteController as AdminSiteController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\UploadController;
@@ -31,6 +32,9 @@ Route::middleware('auth')->group(function () {
 // signed URL handed out by the MCP tool get_upload_url
 Route::post('/upload/{site}', UploadController::class)->middleware('signed')->name('upload');
 
-Route::post('/s/{slug}', [SiteController::class, 'unlock'])->name('site.unlock');
+// own throttle prefix so unlock attempts don't share the /login budget
+Route::post('/s/{slug}', [SiteController::class, 'unlock'])->middleware('throttle:10,1,unlock')->name('site.unlock');
 Route::get('/s/{slug}/{path?}', [SiteController::class, 'show'])->where('path', '.*')->name('site.show');
 Route::get('/p/{signature}/{slug}/{path?}', [SiteController::class, 'preview'])->where('path', '.*');
+Route::post('/project/{slug}', [ProjectController::class, 'unlock'])->middleware('throttle:10,1,unlock')->name('project.unlock');
+Route::get('/project/{slug}', [ProjectController::class, 'show'])->name('project.show');
