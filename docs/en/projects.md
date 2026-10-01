@@ -4,7 +4,7 @@ A project bundles several sites behind one link. Send your client the project li
 
 ## Create a project
 
-The admin opens on **Projects**. Click **New project**, then create sites right inside it with **New site** on the project page. Each project's card cycles through the previews of its sites.
+The admin opens on **Projects**. Click **New project**, then create sites right inside it with **Add site** on the project page. **New site** on the Sites page also lets you pick a project. Each project's card cycles through the previews of its sites.
 
 ![The projects page in the prevju admin](/screenshots/en/projects.png)
 

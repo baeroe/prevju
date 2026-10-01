@@ -201,7 +201,8 @@ class AdminTest extends TestCase
         $this->get("/en/projects/{$project->id}")->assertInertia(fn (Assert $page) => $page
             ->component('projects/show')
             ->where('project.name', 'Bäckerei')
-            ->where('project.sites.0.name', 'v1'));
+            ->where('project.sites.0.name', 'v1')
+            ->where('projects.0', ['id' => $project->id, 'name' => 'Bäckerei']));
     }
 
     public function test_site_moves_into_and_out_of_a_project(): void

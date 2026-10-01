@@ -19,7 +19,11 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        return Inertia::render('projects/show', ['project' => $project->adminCard()]);
+        return Inertia::render('projects/show', [
+            'project' => $project->adminCard(),
+            // for the project field of the new-site dialog
+            'projects' => Project::orderBy('name')->get(['id', 'name']),
+        ]);
     }
 
     public function store(Request $request)

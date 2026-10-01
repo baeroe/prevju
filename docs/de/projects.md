@@ -4,7 +4,7 @@ Ein Projekt bündelt mehrere Sites hinter einem Link. Statt eines Links pro Entw
 
 ## Projekt anlegen
 
-Der Admin startet bei **Projekte**. Auf **Neues Projekt** klicken und danach Sites direkt im Projekt anlegen, mit **Neue Site** auf der Projektseite. Die Card eines Projekts blättert durch die Vorschauen seiner Sites.
+Der Admin startet bei **Projekte**. Auf **Neues Projekt** klicken und danach Sites direkt im Projekt anlegen, mit **Site hinzufügen** auf der Projektseite. Auch **Neue Site** auf der Sites-Seite lässt dich ein Projekt wählen. Die Card eines Projekts blättert durch die Vorschauen seiner Sites.
 
 ![Die Projekte-Seite im prevju-Admin](/screenshots/de/projects.png)
 

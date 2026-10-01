@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowLeft, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { AppLayout } from '@/components/app-layout';
 import { LinkBar } from '@/components/link-bar';
 import { NewSiteDialog } from '@/components/new-site-dialog';
@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/button';
 import { deleteWithUndo } from '@/lib/delete-with-undo';
 import { moveSite } from '@/lib/move-site';
 import { siteCount } from '@/lib/format';
-import type { ProjectCard } from '@/types';
+import type { ProjectCard, ProjectOption } from '@/types';
 import { path, t } from '@/lib/i18n';
 
-export default function ProjectShow({ project }: { project: ProjectCard }) {
+export default function ProjectShow({ project, projects }: { project: ProjectCard; projects: ProjectOption[] }) {
     return (
-        <AppLayout actions={<NewSiteDialog projectId={project.id} />}>
+        <AppLayout>
             <Head title={project.name} />
 
             <Link href={path('/projects')} className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
@@ -27,10 +27,22 @@ export default function ProjectShow({ project }: { project: ProjectCard }) {
 
             <div className="mt-14 grid gap-14 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
                 <section aria-labelledby="project-sites" className="grid content-start gap-8">
-                    <h2 id="project-sites" className="flex items-baseline justify-between font-medium">
-                        {t('project.sites')}
-                        <span className="font-mono text-xs font-normal text-ink-muted">{siteCount(project.site_count)}</span>
-                    </h2>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                        <h2 id="project-sites" className="flex items-baseline gap-3 font-medium">
+                            {t('project.sites')}
+                            <span className="font-mono text-xs font-normal text-ink-muted">{siteCount(project.site_count)}</span>
+                        </h2>
+                        <NewSiteDialog
+                            projects={projects}
+                            projectId={project.id}
+                            trigger={
+                                <Button variant="outline" size="sm">
+                                    <Plus />
+                                    {t('project.add_site')}
+                                </Button>
+                            }
+                        />
+                    </div>
                     {project.sites.length === 0 ? (
                         <p className="text-sm text-ink-muted">
                             {t('project.no_sites')}

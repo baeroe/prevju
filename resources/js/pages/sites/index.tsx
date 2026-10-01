@@ -25,7 +25,7 @@ export default function SitesIndex({ sites, projects }: { sites: SiteCard[]; pro
     const count = (f: 'none' | number) => sites.filter((s) => (f === 'none' ? !s.project_id : s.project_id === f)).length;
 
     return (
-        <AppLayout actions={sites.length > 0 && <NewSiteDialog />}>
+        <AppLayout actions={sites.length > 0 && <NewSiteDialog projects={projects} />}>
             <Head title={t('sites.title')} />
 
             <div className="flex flex-wrap items-end justify-between gap-4">
@@ -43,7 +43,7 @@ export default function SitesIndex({ sites, projects }: { sites: SiteCard[]; pro
             </div>
 
             {sites.length === 0 ? (
-                <EmptyState />
+                <EmptyState projects={projects} />
             ) : (
                 <div className="mt-10 grid gap-8 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-12">
                     <nav aria-label={t('sites.filter_label')} className="flex gap-1 overflow-x-auto pb-1 lg:sticky lg:top-6 lg:flex-col lg:self-start lg:overflow-visible">
@@ -128,7 +128,7 @@ function FilterItem({ label, count, active, onSelect, onDropSite }: { label: str
     );
 }
 
-function EmptyState() {
+function EmptyState({ projects }: { projects: ProjectOption[] }) {
     return (
         <CropFrame className="mt-14 mx-5 grid max-w-xl gap-4 border bg-sheet p-10">
             <h2 className="text-xl font-semibold tracking-tight">{t('sites.empty_title')}</h2>
@@ -136,6 +136,7 @@ function EmptyState() {
                 {t('sites.empty_text')}
             </p>
             <NewSiteDialog
+                projects={projects}
                 trigger={
                     <Button className="justify-self-start">
                         <Plus />
