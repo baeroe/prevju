@@ -10,7 +10,7 @@ In der Admin-Übersicht blättert die Card eines Projekts durch die Vorschauen s
 
 ## Die Seite für den Kunden
 
-Der Projekt-Link (`/project/<slug>`) zeigt für jede Site eine Card mit Live-Vorschau, sortiert nach letzter Änderung. Ein Klick öffnet die Site.
+Der Projekt-Link (`/project/<slug>`) zeigt für jede Site eine Card mit Live-Vorschau, sortiert nach letzter Änderung. Ein Klick öffnet die Site. Sites ohne HTML-Datei (etwa eine neue Version vor dem Upload) erscheinen dort noch nicht.
 
 ## Passwörter
 

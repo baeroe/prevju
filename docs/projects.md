@@ -10,7 +10,7 @@ In the admin overview, a project's card cycles through the previews of its sites
 
 ## The client's page
 
-The project link (`/project/<slug>`) shows a card with a live preview for each site, sorted by last change. A click opens the site.
+The project link (`/project/<slug>`) shows a card with a live preview for each site, sorted by last change. A click opens the site. Sites without an HTML file (e.g. a new version before its upload) don't show up yet.
 
 ## Passwords
 
