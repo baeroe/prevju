@@ -111,4 +111,10 @@ class LocaleTest extends TestCase
 
         $this->post('/de/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect(url('/de/projects'));
     }
+
+    public function test_logout_returns_to_login_in_the_same_language(): void
+    {
+        $this->actingAs(User::factory()->create())->post('/de/logout')->assertRedirect(url('/de/login'));
+        $this->assertGuest();
+    }
 }
