@@ -36,7 +36,7 @@ class SiteController extends Controller
         ]);
         $site = Site::create([...$data, 'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null]);
 
-        return redirect("/sites/{$site->id}");
+        return redirect()->route('sites.show', $site);
     }
 
     public function update(Request $request, Site $site)

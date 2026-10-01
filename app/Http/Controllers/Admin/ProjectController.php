@@ -20,7 +20,7 @@ class ProjectController extends Controller
         $data = $request->validate(['name' => 'required|string|max:255', 'password' => 'nullable|string|max:255']);
         $project = Project::create([...$data, 'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null]);
 
-        return redirect("/projects/{$project->id}");
+        return redirect()->route('projects.show', $project);
     }
 
     public function update(Request $request, Project $project)

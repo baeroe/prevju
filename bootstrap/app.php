@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web(append: [HandleInertiaRequests::class]);
+        $middleware->web(append: [SetLocale::class, HandleInertiaRequests::class]);
+        $middleware->redirectUsersTo(fn () => route('sites.index'));
+        // auth runs before SetLocale, so take the language straight from the prefix
+        $middleware->redirectGuestsTo(fn (Request $request) => route('login', ['locale' => $request->route('locale') ?? app()->getLocale()]));
         // reverse proxy (NPM, Traefik, Caddy) in front: honour X-Forwarded-Proto so URLs are https.
         // Private ranges only, so direct hits on the published port can't spoof X-Forwarded-For.
         // signed upload URLs are called by curl from MCP clients, there is no session or CSRF token

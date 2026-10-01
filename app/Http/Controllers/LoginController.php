@@ -23,7 +23,7 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/sites');
+        return redirect()->intended(route('sites.index'));
     }
 
     public function destroy(Request $request)
@@ -32,6 +32,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }
