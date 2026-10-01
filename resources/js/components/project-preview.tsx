@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SitePreview } from '@/components/site-preview';
 import { cn } from '@/lib/utils';
 import type { SiteCard } from '@/types';
@@ -8,19 +8,33 @@ const INTERVAL = 4000;
 /**
  * Project thumbnail that cycles through its drafts like a slider. Only the current slide and its two
  * neighbours are mounted, so a project with ten versions still loads at most three iframes.
- * Pauses on hover/focus (WCAG 2.2.2) and stands still with reduced motion.
+ * The caller pauses it on hover/focus (WCAG 2.2.2); it also stops off-screen, in a background tab and with reduced motion,
+ * so cycling cards don't keep reloading sites nobody looks at.
  */
-export function ProjectPreview({ sites }: { sites: SiteCard[] }) {
+export function ProjectPreview({ sites, paused = false }: { sites: SiteCard[]; paused?: boolean }) {
     const slides = sites.filter((s) => s.has_html);
     const count = slides.length;
+    const box = useRef<HTMLDivElement>(null);
     const [index, setIndex] = useState(0);
-    const [paused, setPaused] = useState(false);
+    const [onScreen, setOnScreen] = useState(false);
+    const [tabVisible, setTabVisible] = useState(() => !document.hidden);
 
     useEffect(() => {
-        if (count < 2 || paused || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const el = box.current;
+        if (!el) return;
+        const io = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
+        io.observe(el);
+        const onVisibility = () => setTabVisible(!document.hidden);
+        document.addEventListener('visibilitychange', onVisibility);
+        return () => (io.disconnect(), document.removeEventListener('visibilitychange', onVisibility));
+    }, [count]);
+
+    const running = count > 1 && !paused && onScreen && tabVisible;
+    useEffect(() => {
+        if (!running || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const timer = setInterval(() => setIndex((i) => i + 1), INTERVAL);
         return () => clearInterval(timer);
-    }, [count, paused]);
+    }, [running]);
 
     if (count === 0) {
         return sites.length > 0 ? (
@@ -34,13 +48,7 @@ export function ProjectPreview({ sites }: { sites: SiteCard[] }) {
     const mounted = new Set([current, (current + 1) % count, (current + count - 1) % count]);
 
     return (
-        <div
-            className="relative aspect-[16/10]"
-            onMouseEnter={() => setPaused(true)}
-            onMouseLeave={() => setPaused(false)}
-            onFocus={() => setPaused(true)}
-            onBlur={() => setPaused(false)}
-        >
+        <div ref={box} className="relative aspect-[16/10]">
             {slides.map((site, i) =>
                 mounted.has(i) ? (
                     <div

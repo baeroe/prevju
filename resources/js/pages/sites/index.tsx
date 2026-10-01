@@ -93,13 +93,21 @@ export default function SitesIndex({ projects, sites }: { projects: ProjectCard[
 }
 
 function ProjectTile({ project }: { project: ProjectCard }) {
+    const [paused, setPaused] = useState(false);
     if (useIsHidden(`project:${project.id}`)) return null;
 
     return (
-        <li className="group min-w-0">
+        // focus events bubble in React, so tabbing to the card's links pauses the slider too
+        <li
+            className="group min-w-0"
+            onMouseEnter={() => setPaused(true)}
+            onMouseLeave={() => setPaused(false)}
+            onFocus={() => setPaused(true)}
+            onBlur={() => setPaused(false)}
+        >
             <Link href={`/projects/${project.id}`} className="block" aria-label={`Projekt ${project.name} öffnen`}>
                 <CropFrame>
-                    <ProjectPreview sites={project.sites} />
+                    <ProjectPreview sites={project.sites} paused={paused} />
                 </CropFrame>
             </Link>
             <div className="mt-8 flex items-start justify-between gap-2">

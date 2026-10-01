@@ -26,11 +26,15 @@ class ProjectController extends Controller
 
         return Inertia::render('projects/public', [
             'project' => ['name' => $project->name],
-            'sites' => $project->sites->map(fn (Site $site) => [
-                ...$site->summary(),
-                // the signed preview URL skips the site password: only for sites this viewer may open anyway
-                'preview_url' => $site->setRelation('project', $project)->isOpenFor($request) ? $site->previewUrl() : null,
-            ]),
+            'sites' => $project->sites
+                ->map(fn (Site $site) => [
+                    ...$site->summary(),
+                    // the signed preview URL skips the site password: only for sites this viewer may open anyway
+                    'preview_url' => $site->setRelation('project', $project)->isOpenFor($request) ? $site->previewUrl() : null,
+                ])
+                // a freshly created version without files would only link to a 404
+                ->filter(fn (array $site) => $site['has_html'])
+                ->values(),
         ]);
     }
 

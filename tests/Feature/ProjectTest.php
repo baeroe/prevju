@@ -134,4 +134,16 @@ class ProjectTest extends TestCase
         }
         $this->post('/project/proj123', ['password' => 'falsch'])->assertTooManyRequests();
     }
+
+    public function test_project_page_hides_sites_without_html(): void
+    {
+        $project = $this->project();
+        $this->site($project, 'projv1');
+        $this->travel(1)->minutes();
+        Site::create(['name' => 'v2 leer', 'slug' => 'projv2', 'project_id' => $project->id]);
+
+        $this->get('/project/proj123')->assertInertia(fn (Assert $page) => $page
+            ->has('sites', 1)
+            ->where('sites.0.name', 'projv1'));
+    }
 }
