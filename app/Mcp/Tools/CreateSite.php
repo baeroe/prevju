@@ -15,11 +15,16 @@ class CreateSite extends Tool
 {
     public function handle(Request $request): Response
     {
-        $data = $request->validate(['name' => 'required|string|max:255', 'password' => 'nullable|string|max:255']);
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'project_id' => 'nullable|integer|exists:projects,id',
+        ]);
 
         $site = Site::create([
             'name' => $data['name'],
             'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null,
+            'project_id' => $data['project_id'] ?? null,
         ]);
 
         return Response::json($site->summary());
@@ -30,6 +35,7 @@ class CreateSite extends Tool
         return [
             'name' => $schema->string()->description('Shown in the admin and on the password page, e.g. "Relaunch Bäckerei Kurz"')->required(),
             'password' => $schema->string()->description('Optional. Clients must enter it to view the site.'),
+            'project_id' => $schema->integer()->description('Optional. Put the site into this project (see list-projects).'),
         ];
     }
 }

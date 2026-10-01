@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mcp\Servers\PrevjuServer;
 use App\Mcp\Tools;
+use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -52,7 +53,7 @@ class McpTest extends TestCase
         $this->postJson('/mcp', $call, ['Authorization' => "Bearer {$token->plainTextToken}"])
             ->assertOk()
             ->assertJsonPath('result.tools.0.name', 'get-compatibility')
-            ->assertJsonCount(10, 'result.tools');
+            ->assertJsonCount(12, 'result.tools');
 
         $token->accessToken->delete();
         auth()->forgetGuards();
@@ -297,5 +298,34 @@ class McpTest extends TestCase
             $this->assertTrue((new $tool)->toArray()['annotations']['destructiveHint'], $tool);
         }
         $this->assertTrue((new Tools\ListSites)->toArray()['annotations']['readOnlyHint']);
+        $this->assertTrue((new Tools\ListProjects)->toArray()['annotations']['readOnlyHint']);
+    }
+
+    public function test_create_and_list_projects(): void
+    {
+        PrevjuServer::tool(Tools\CreateProject::class, ['name' => 'Studio Kurz', 'password' => 'kunde'])
+            ->assertOk()->assertSee(['"has_password":true', '"site_count":0']);
+        $project = Project::firstOrFail();
+        $this->assertTrue(Hash::check('kunde', $project->password));
+
+        PrevjuServer::tool(Tools\ListProjects::class)
+            ->assertOk()->assertSee(['Studio Kurz', $project->url()])->assertDontSee(['$2y$', 'password":"']);
+        PrevjuServer::tool(Tools\CreateProject::class, [])->assertHasErrors();
+    }
+
+    public function test_sites_move_into_and_out_of_projects(): void
+    {
+        $project = Project::create(['name' => 'Studio Kurz']);
+
+        PrevjuServer::tool(Tools\CreateSite::class, ['name' => 'v2', 'project_id' => $project->id])
+            ->assertOk()->assertSee('"project_id":'.$project->id);
+        PrevjuServer::tool(Tools\CreateSite::class, ['name' => 'v3', 'project_id' => 999])->assertHasErrors();
+
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'project_id' => $project->id])->assertOk();
+        $this->assertSame($project->id, $this->site->fresh()->project_id);
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'name' => 'x'])->assertOk();
+        $this->assertSame($project->id, $this->site->fresh()->project_id, 'omitted project stays');
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'clear_project' => true])
+            ->assertOk()->assertSee('"project_id":null');
     }
 }
