@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: Get started
-      link: /setup
+      link: /en/setup
     - theme: alt
       text: GitHub
       link: https://github.com/baeroe/prevju
@@ -27,6 +27,6 @@ features:
 <div class="showcase">
   <div class="crop">
     <i></i><i></i><i></i><i></i>
-    <img src="/screenshots/sites.png" alt="prevju admin: sites as cards with a live preview of each draft">
+    <img src="/screenshots/en/sites.png" alt="prevju admin: sites as cards with a live preview of each draft">
   </div>
 </div>

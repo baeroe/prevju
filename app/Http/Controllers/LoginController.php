@@ -18,12 +18,15 @@ class LoginController extends Controller
         $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
 
         if (! Auth::attempt($credentials, remember: true)) {
-            return back()->withErrors(['email' => 'E-Mail oder Passwort stimmt nicht.'])->onlyInput('email');
+            return back()->withErrors(['email' => __('login.failed')])->onlyInput('email');
         }
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/sites');
+        // back to the page that asked for the login, but in the language the login was done in
+        $intended = $request->session()->pull('url.intended', route('projects.index'));
+
+        return redirect(preg_replace('#^('.preg_quote(url('/'), '#').')/(en|de)(?=/|$)#', '$1/'.app()->getLocale(), $intended));
     }
 
     public function destroy(Request $request)
@@ -32,6 +35,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect()->route('login');
     }
 }

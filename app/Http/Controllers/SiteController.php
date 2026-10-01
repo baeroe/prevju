@@ -14,9 +14,13 @@ class SiteController extends Controller
     {
         $site = Site::where('slug', $slug)->firstOrFail();
 
-        // the logged-in admin opens protected sites without typing the password
-        if ($site->password && ! $request->user() && ! $request->session()->get("site.{$site->id}")) {
-            return response()->view('site-password', ['site' => $site], 401);
+        if (! $site->isOpenFor($request)) {
+            return response()->view('site-password', [
+                'name' => $site->name,
+                'action' => route('site.unlock', $site->slug),
+                'intro' => __('client.intro_site'),
+                'button' => __('client.open_site'),
+            ], 401);
         }
 
         return $this->serve($request, $site, $path);
@@ -59,7 +63,7 @@ class SiteController extends Controller
         $site = Site::where('slug', $slug)->firstOrFail();
 
         if (! Hash::check($request->input('password', ''), $site->password)) {
-            return back()->withErrors(['password' => 'Falsches Passwort.']);
+            return back()->withErrors(['password' => __('password.wrong')]);
         }
 
         $request->session()->put("site.{$site->id}", true);

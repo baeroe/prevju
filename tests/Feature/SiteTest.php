@@ -60,7 +60,7 @@ class SiteTest extends TestCase
     public function test_password_protected_site(): void
     {
         $this->makeSite('secret');
-        $this->get('/s/abc123/')->assertUnauthorized()->assertSee('Passwort');
+        $this->get('/s/abc123/')->assertUnauthorized()->assertSee('Password');
         $this->post('/s/abc123', ['password' => 'wrong'])->assertSessionHasErrors('password');
         $this->get('/s/abc123/')->assertUnauthorized();
         $this->post('/s/abc123', ['password' => 'secret'])->assertRedirect();

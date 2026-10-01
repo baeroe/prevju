@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { useSyncExternalStore } from 'react';
 import { toast } from 'sonner';
+import { t } from '@/lib/i18n';
 
 const hidden = new Set<string>();
 const listeners = new Set<() => void>();
@@ -30,7 +31,7 @@ export function deleteWithUndo({ key, url, message }: { key: string; url: string
     toast(message, {
         duration: 5000,
         action: {
-            label: 'Rückgängig',
+            label: t('common.undo'),
             onClick: () => {
                 clearTimeout(timer);
                 restore();

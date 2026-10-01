@@ -4,7 +4,7 @@ import llmstxt from 'vitepress-plugin-llms';
 const pages = (prefix: string, t: Record<string, string>): DefaultTheme.SidebarItem[] => [
     {
         text: t.guide,
-        items: ['setup', 'reverse-proxy', 'uploading', 'what-works', 'mcp', 'upgrading'].map((p) => ({ text: t[p], link: `${prefix}/${p}` })),
+        items: ['setup', 'reverse-proxy', 'uploading', 'projects', 'what-works', 'mcp', 'upgrading'].map((p) => ({ text: t[p], link: `${prefix}/${p}` })),
     },
 ];
 
@@ -13,6 +13,7 @@ const en = {
     setup: 'Setup',
     'reverse-proxy': 'Reverse proxy',
     uploading: 'Uploading',
+    projects: 'Projects',
     'what-works': 'What works',
     mcp: 'MCP',
     upgrading: 'Upgrading',
@@ -23,6 +24,7 @@ const de = {
     setup: 'Einrichtung',
     'reverse-proxy': 'Reverse-Proxy',
     uploading: 'Hochladen',
+    projects: 'Projekte',
     'what-works': 'Was funktioniert',
     mcp: 'MCP',
     upgrading: 'Aktualisieren',
@@ -39,26 +41,28 @@ export default defineConfig({
         ['meta', { name: 'theme-color', content: '#f4f4f1' }],
         ['meta', { property: 'og:title', content: 'prevju' }],
         ['meta', { property: 'og:description', content: 'Self-hosted previews for HTML drafts.' }],
-        ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/sites.png' }],
+        ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/en/sites.png' }],
     ],
     appearance: false,
     // agents get the English docs only, without the legal pages
-    vite: { plugins: [llmstxt({ ignoreFiles: ['de/**', 'imprint.md', 'privacy.md'] })] },
+    vite: { plugins: [llmstxt({ workDir: 'en', ignoreFiles: ['imprint.md', 'privacy.md'] })] },
 
     locales: {
         root: {
             label: 'English',
             lang: 'en',
+            // English lives under /en like German under /de; old links without a prefix are redirected in the theme
+            link: '/en/',
             description: 'Self-hosted previews for HTML drafts. Upload, send the link, optionally with a password.',
             themeConfig: {
                 nav: [
-                    { text: 'Guide', link: '/setup' },
+                    { text: 'Guide', link: '/en/setup' },
                     { text: 'Releases', link: 'https://github.com/baeroe/prevju/releases' },
                 ],
-                sidebar: pages('', en),
+                sidebar: pages('/en', en),
                 editLink: { pattern: 'https://github.com/baeroe/prevju/edit/main/docs/:path', text: 'Edit this page' },
                 footer: {
-                    message: 'Released under the MIT License. <a href="/imprint">Imprint</a> · <a href="/privacy">Privacy policy</a>',
+                    message: 'Released under the MIT License. <a href="/en/imprint">Imprint</a> · <a href="/en/privacy">Privacy policy</a>',
                     copyright: '© 2026 Rafael Haußmann',
                 },
             },

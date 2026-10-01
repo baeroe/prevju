@@ -4,6 +4,8 @@ prevju hat einen MCP-Server unter `<APP_URL>/mcp`. Damit legen Claude Code oder 
 
 ## Verbinden
 
+![Die MCP-Seite im prevju-Admin: Befehl zum Einrichten und Tokens](/screenshots/de/mcp.png)
+
 Leg im Admin unter **MCP** ein Token an. Die Seite erzeugt den Befehl mit deinem Token, für Claude Code oder Codex, für alle Projekte oder nur das aktuelle.
 
 **Claude Code** (`--scope user` für alle Projekte, `--scope local` für das aktuelle):
@@ -28,13 +30,14 @@ Ein Token hat dieselben Rechte wie der Admin-Login. Leg pro Gerät eins an, dann
 |---|---|
 | `get-compatibility` | Liefert [Was funktioniert](/de/what-works). Agenten rufen es vor dem Hochladen auf |
 | `list-sites`, `get-site` | Sites mit Link, Passwortstatus und Dateien |
-| `create-site` | Neue Site, optional mit Passwort |
-| `update-site` | Umbenennen, Passwort setzen oder entfernen |
+| `create-site` | Neue Site, optional mit Passwort und in einem Projekt |
+| `update-site` | Umbenennen, Passwort setzen oder entfernen, in ein Projekt verschieben oder herausnehmen |
+| `list-projects`, `create-project` | [Projekte](/de/projects): ein Kunden-Link für mehrere Sites |
 | `write-files` | Generierte Textdateien (HTML, CSS, JS) direkt schreiben |
 | `get-upload-url` | Signierte URL für 15 Minuten, um eine ZIP oder Binärdatei mit `curl` hochzuladen |
 | `delete-file`, `clear-files`, `delete-site` | Destruktiv, ohne Rückgängig |
 
-Für eine neue Version eines Entwurfs laden Agenten mit `replace` hoch: Die Live-Site wechselt in einem Schritt und ist zwischendurch nie leer. Ein fehlgeschlagener Upload ändert nichts.
+Für eine neue Version eines Entwurfs laden Agenten mit `replace` hoch: Die Live-Site wechselt in einem Schritt und ist zwischendurch nie leer. Ein fehlgeschlagener Upload ändert nichts. Sollen Versionen für den Kunden nebeneinander stehen, legen Agenten jede Version als eigene Site in einem [Projekt](/de/projects) an.
 
 ## Grenzen
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Project;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -13,23 +14,30 @@ class SiteController extends Controller
     public function index()
     {
         return Inertia::render('sites/index', [
-            'sites' => Site::latest('updated_at')->get()->map($this->card(...)),
+            'sites' => Site::latest('updated_at')->get()->map->adminCard(),
+            // targets for the sidebar and the move menu on each card
+            'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     public function show(Site $site)
     {
         return Inertia::render('sites/show', [
-            'site' => [...$this->card($site), 'files' => $site->fileList()],
+            'site' => [...$site->adminCard(), 'files' => $site->fileList()],
+            'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate(['name' => 'required|string|max:255', 'password' => 'nullable|string|max:255']);
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'project_id' => 'nullable|integer|exists:projects,id',
+        ]);
         $site = Site::create([...$data, 'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null]);
 
-        return redirect("/sites/{$site->id}");
+        return redirect()->route('sites.show', $site);
     }
 
     public function update(Request $request, Site $site)
@@ -38,6 +46,7 @@ class SiteController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'password' => 'nullable|string|max:255',
             'clear_password' => 'boolean',
+            'project_id' => 'sometimes|nullable|integer|exists:projects,id',
         ]);
 
         if (isset($data['name'])) {
@@ -47,6 +56,9 @@ class SiteController extends Controller
             $site->password = Hash::make($data['password']);
         } elseif ($data['clear_password'] ?? false) {
             $site->password = null;
+        }
+        if (array_key_exists('project_id', $data)) {
+            $site->project_id = $data['project_id'];
         }
         $site->save();
 
@@ -74,10 +86,5 @@ class SiteController extends Controller
         $site->deleteFile($request->validate(['path' => 'required|string'])['path']);
 
         return back();
-    }
-
-    private function card(Site $site): array
-    {
-        return [...$site->summary(), 'preview_url' => $site->previewUrl()];
     }
 }

@@ -11,7 +11,7 @@ This is a translation, the [German version](/de/privacy) is binding.
 
 ## Controller
 
-Rafael Haußmann, address and contact see [Imprint](/imprint).
+Rafael Haußmann, address and contact see [Imprint](/en/imprint).
 
 ## What this website processes
 

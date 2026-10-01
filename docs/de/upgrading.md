@@ -10,6 +10,15 @@ Version gepinnt? Dann zuerst den Tag in der `docker-compose.yml` ändern. Alle V
 
 ## Hinweise pro Version
 
+### 0.4
+
+- Neu: [Projekte](/de/projects). Ein Kunden-Link und ein Passwort für mehrere Sites, neueste zuerst. Die Datenbank migriert beim Start, beim Update ist nichts zu tun. Verbundene MCP-Clients sehen die neuen Tools nach einem Reconnect.
+- Passwortseiten erlauben jetzt 10 Versuche pro Minute und IP.
+- Der Admin hat getrennte Seiten **Projekte** und **Sites** und startet bei den Projekten. Sites kommen per Ziehen oder über das Projekt-Label auf jeder Card in ein Projekt.
+- Der Admin ist auf Englisch und Deutsch, Standard ist Englisch. Admin-URLs beginnen jetzt mit der Sprache (`/de/sites`), alte Lesezeichen wie `/sites` leiten weiter. Kundenlinks ändern sich nicht. Siehe [Einrichtung](/de/setup#sprache).
+- MCP-Fehlermeldungen sind jetzt auf Englisch.
+- Die Doku liegt jetzt unter `/en/` und `/de/`, alte Links leiten weiter.
+
 ### 0.3.2
 
 - `get-compatibility` liefert jetzt dieselbe Seite wie [Was funktioniert](/de/what-works) auf prevju.dev, Agenten und Doku sagen also immer dasselbe. Beim Update ist nichts zu tun.

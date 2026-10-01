@@ -2,6 +2,7 @@ import { XIcon } from 'lucide-react';
 import { Dialog as DialogPrimitive } from 'radix-ui';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
+import { t } from '@/lib/i18n';
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -21,7 +22,7 @@ function DialogContent({ className, children, ...props }: React.ComponentProps<t
                 {children}
                 <DialogPrimitive.Close className="absolute top-3 right-3 grid size-8 cursor-pointer place-items-center text-ink-muted hover:text-ink">
                     <XIcon className="size-4" />
-                    <span className="sr-only">Schließen</span>
+                    <span className="sr-only">{t('common.close')}</span>
                 </DialogPrimitive.Close>
             </DialogPrimitive.Content>
         </DialogPrimitive.Portal>

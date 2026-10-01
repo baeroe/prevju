@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { itemsFromDrop, itemsFromInput, stripWrapper, uploadFile, type UploadItem } from '@/lib/upload';
 import { cn } from '@/lib/utils';
+import { path, t } from '@/lib/i18n';
 
 type Job = UploadItem & { id: number; progress: number; status: 'queued' | 'uploading' | 'done' | 'error'; error?: string };
 
@@ -25,7 +26,7 @@ export function Dropzone({ siteId, empty, className }: { siteId: number; empty: 
         for (const job of list) {
             patch(job.id, { status: 'uploading', progress: 0, error: undefined });
             try {
-                await uploadFile(`/sites/${siteId}/files`, job, (progress) => patch(job.id, { progress }));
+                await uploadFile(path(`/sites/${siteId}/files`), job, (progress) => patch(job.id, { progress }));
                 patch(job.id, { status: 'done', progress: 1 });
             } catch (e) {
                 failed++;
@@ -34,7 +35,7 @@ export function Dropzone({ siteId, empty, className }: { siteId: number; empty: 
         }
         router.reload({ only: ['site'] });
         const ok = list.length - failed;
-        if (ok) toast(list.length === 1 ? `${list[0].path} hochgeladen` : `${ok} Dateien hochgeladen`);
+        if (ok) toast(list.length === 1 ? t('upload.uploaded_one', { path: list[0].path }) : t('upload.uploaded_many', { count: ok }));
         if (!failed) setTimeout(() => setJobs((js) => js.filter((j) => j.status !== 'done')), 1200);
     }
 
@@ -67,15 +68,15 @@ export function Dropzone({ siteId, empty, className }: { siteId: number; empty: 
             >
                 <Upload className="size-5 text-ink-muted" aria-hidden />
                 <p className="max-w-[46ch] text-sm text-balance">
-                    {empty ? 'Zieh den Ordner mit deinem Entwurf hierher.' : 'Weitere Dateien hierher ziehen.'}
-                    <span className="block text-ink-muted">HTML, CSS, JS, Bilder oder eine ZIP, bis 100 MB pro Datei.</span>
+                    {empty ? t('upload.drop_first') : t('upload.drop_more')}
+                    <span className="block text-ink-muted">{t('upload.types')}</span>
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
                     <Button variant="outline" size="sm" onClick={() => files.current?.click()}>
-                        Dateien wählen
+                        {t('upload.choose_files')}
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => folder.current?.click()}>
-                        Ordner wählen
+                        {t('upload.choose_folder')}
                     </Button>
                 </div>
                 <input ref={files} type="file" multiple hidden onChange={(e) => (start(itemsFromInput(e.target.files!)), (e.target.value = ''))} />
@@ -99,13 +100,13 @@ export function Dropzone({ siteId, empty, className }: { siteId: number; empty: 
                             />
                             <span className="relative min-w-0 flex-1 truncate font-mono text-xs">{job.path}</span>
                             <span className={cn('relative shrink-0 text-xs tabular-nums', job.status === 'error' ? 'text-danger' : 'text-ink-muted')}>
-                                {job.status === 'queued' && 'Wartet'}
+                                {job.status === 'queued' && t('upload.queued')}
                                 {job.status === 'uploading' && `${Math.round(job.progress * 100)} %`}
-                                {job.status === 'done' && 'Fertig'}
+                                {job.status === 'done' && t('upload.done')}
                                 {job.status === 'error' && job.error}
                             </span>
                             {job.status === 'error' && (
-                                <Button variant="ghost" size="icon-sm" className="relative" aria-label={`${job.path} erneut hochladen`} onClick={() => void run([job])}>
+                                <Button variant="ghost" size="icon-sm" className="relative" aria-label={t('upload.retry', { path: job.path })} onClick={() => void run([job])}>
                                     <RotateCw />
                                 </Button>
                             )}

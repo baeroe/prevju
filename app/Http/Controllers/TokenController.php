@@ -26,7 +26,7 @@ class TokenController extends Controller
     {
         $name = $request->validate(['name' => 'required|string|max:100'])['name'];
 
-        return redirect('/tokens')->with('new_token', $request->user()->createToken($name)->plainTextToken);
+        return redirect()->route('tokens.index')->with('new_token', $request->user()->createToken($name)->plainTextToken);
     }
 
     public function destroy(Request $request, int $token)

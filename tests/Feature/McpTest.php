@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mcp\Servers\PrevjuServer;
 use App\Mcp\Tools;
+use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -52,7 +53,7 @@ class McpTest extends TestCase
         $this->postJson('/mcp', $call, ['Authorization' => "Bearer {$token->plainTextToken}"])
             ->assertOk()
             ->assertJsonPath('result.tools.0.name', 'get-compatibility')
-            ->assertJsonCount(10, 'result.tools');
+            ->assertJsonCount(12, 'result.tools');
 
         $token->accessToken->delete();
         auth()->forgetGuards();
@@ -110,7 +111,7 @@ class McpTest extends TestCase
             ->assertOk()
             ->assertSee(['css/style.css', 'index.html']);
 
-        PrevjuServer::tool(Tools\GetSite::class, ['site_id' => 999])->assertHasErrors(['Keine Site mit ID 999.']);
+        PrevjuServer::tool(Tools\GetSite::class, ['site_id' => 999])->assertHasErrors(['No site with ID 999.']);
     }
 
     // --- create / update ---
@@ -167,11 +168,11 @@ class McpTest extends TestCase
         PrevjuServer::tool(Tools\WriteFiles::class, ['site_id' => $this->site->id, 'replace' => true, 'files' => [
             ['path' => 'ok.html', 'content' => 'x'],
             ['path' => '../../evil.php', 'content' => 'x'],
-        ]])->assertHasErrors(['Ungültiger Dateipfad: ../../evil.php']);
+        ]])->assertHasErrors(['Invalid file path: ../../evil.php']);
 
         PrevjuServer::tool(Tools\WriteFiles::class, ['site_id' => $this->site->id, 'files' => [
             ['path' => 'big.html', 'content' => str_repeat('x', 2 * 1024 * 1024 + 1)],
-        ]])->assertHasErrors(['Zusammen mehr als 2 MB. Größere Entwürfe als ZIP über get-upload-url hochladen.']);
+        ]])->assertHasErrors(['More than 2 MB in total. Upload larger drafts as a zip via get-upload-url.']);
 
         $this->assertSame(['css/style.css', 'index.html'], $this->files());
         $this->assertFileDoesNotExist(storage_path('app/evil.php'));
@@ -260,7 +261,7 @@ class McpTest extends TestCase
         $this->assertSame(['index.html'], $this->files());
 
         PrevjuServer::tool(Tools\DeleteFile::class, ['site_id' => $this->site->id, 'path' => 'nope.html'])
-            ->assertHasErrors(['Datei nope.html gibt es in dieser Site nicht.']);
+            ->assertHasErrors(['File nope.html does not exist in this site.']);
     }
 
     public function test_clear_files_keeps_site_and_password(): void
@@ -297,5 +298,34 @@ class McpTest extends TestCase
             $this->assertTrue((new $tool)->toArray()['annotations']['destructiveHint'], $tool);
         }
         $this->assertTrue((new Tools\ListSites)->toArray()['annotations']['readOnlyHint']);
+        $this->assertTrue((new Tools\ListProjects)->toArray()['annotations']['readOnlyHint']);
+    }
+
+    public function test_create_and_list_projects(): void
+    {
+        PrevjuServer::tool(Tools\CreateProject::class, ['name' => 'Studio Kurz', 'password' => 'kunde'])
+            ->assertOk()->assertSee(['"has_password":true', '"site_count":0']);
+        $project = Project::firstOrFail();
+        $this->assertTrue(Hash::check('kunde', $project->password));
+
+        PrevjuServer::tool(Tools\ListProjects::class)
+            ->assertOk()->assertSee(['Studio Kurz', $project->url()])->assertDontSee(['$2y$', 'password":"']);
+        PrevjuServer::tool(Tools\CreateProject::class, [])->assertHasErrors();
+    }
+
+    public function test_sites_move_into_and_out_of_projects(): void
+    {
+        $project = Project::create(['name' => 'Studio Kurz']);
+
+        PrevjuServer::tool(Tools\CreateSite::class, ['name' => 'v2', 'project_id' => $project->id])
+            ->assertOk()->assertSee('"project_id":'.$project->id);
+        PrevjuServer::tool(Tools\CreateSite::class, ['name' => 'v3', 'project_id' => 999])->assertHasErrors();
+
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'project_id' => $project->id])->assertOk();
+        $this->assertSame($project->id, $this->site->fresh()->project_id);
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'name' => 'x'])->assertOk();
+        $this->assertSame($project->id, $this->site->fresh()->project_id, 'omitted project stays');
+        PrevjuServer::tool(Tools\UpdateSite::class, ['site_id' => $this->site->id, 'clear_project' => true])
+            ->assertOk()->assertSee('"project_id":null');
     }
 }
