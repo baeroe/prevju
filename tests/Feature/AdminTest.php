@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -47,6 +48,9 @@ class AdminTest extends TestCase
         $this->post('/login', ['email' => 'a@b.de', 'password' => 'wrong'])->assertSessionHasErrors('email');
         $this->post('/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect('/sites');
         $this->assertAuthenticatedAs($user);
+
+        auth()->logout();
+        $this->get('/projects/1')->assertRedirect('/login');
     }
 
     public function test_urls_are_https_behind_a_private_reverse_proxy(): void
@@ -152,5 +156,75 @@ class AdminTest extends TestCase
         $this->delete("/sites/{$this->site->id}")->assertRedirect();
         $this->assertModelMissing($this->site);
         $this->assertDirectoryDoesNotExist(storage_path('app/sites/abc123'));
+    }
+
+    public function test_index_shows_projects_with_their_sites_and_only_loose_sites(): void
+    {
+        $project = Project::create(['name' => 'Bäckerei Kurz', 'password' => Hash::make('pw')]);
+        Site::create(['name' => 'v1', 'slug' => 'projv1', 'project_id' => $project->id]);
+
+        $this->get('/sites')->assertInertia(fn (Assert $page) => $page
+            ->component('sites/index')
+            ->has('projects', 1)
+            ->where('projects.0.name', 'Bäckerei Kurz')
+            ->where('projects.0.has_password', true)
+            ->where('projects.0.site_count', 1)
+            ->where('projects.0.sites.0.name', 'v1')
+            ->missing('projects.0.password')
+            ->has('sites', 1)
+            ->where('sites.0.name', 'Test'));
+    }
+
+    public function test_create_project_and_site_inside_it(): void
+    {
+        $this->post('/projects', ['name' => 'Bäckerei', 'password' => 'kunde'])->assertRedirect();
+        $project = Project::where('name', 'Bäckerei')->firstOrFail();
+        $this->assertTrue(Hash::check('kunde', $project->password));
+
+        $this->post('/sites', ['name' => 'v1', 'project_id' => $project->id])->assertRedirect();
+        $this->assertSame($project->id, Site::where('name', 'v1')->value('project_id'));
+        $this->post('/sites', ['name' => 'x', 'project_id' => 999])->assertSessionHasErrors('project_id');
+
+        $this->get("/projects/{$project->id}")->assertInertia(fn (Assert $page) => $page
+            ->component('projects/show')
+            ->where('project.name', 'Bäckerei')
+            ->where('project.sites.0.name', 'v1'));
+    }
+
+    public function test_site_moves_into_and_out_of_a_project(): void
+    {
+        $project = Project::create(['name' => 'Bäckerei']);
+
+        $this->patch("/sites/{$this->site->id}", ['project_id' => $project->id])->assertRedirect();
+        $this->assertSame($project->id, $this->site->fresh()->project_id);
+
+        $this->patch("/sites/{$this->site->id}", ['name' => 'Umbenannt'])->assertRedirect();
+        $this->assertSame($project->id, $this->site->fresh()->project_id, 'omitted project_id stays');
+
+        $this->get("/sites/{$this->site->id}")->assertInertia(fn (Assert $page) => $page
+            ->where('site.project_id', $project->id)
+            ->where('projects.0.name', 'Bäckerei'));
+
+        $this->patch("/sites/{$this->site->id}", ['project_id' => null])->assertRedirect();
+        $this->assertNull($this->site->fresh()->project_id);
+    }
+
+    public function test_project_password_set_keep_clear_and_delete_keeps_sites(): void
+    {
+        $project = Project::create(['name' => 'Bäckerei']);
+        $this->site->update(['project_id' => $project->id]);
+
+        $this->patch("/projects/{$project->id}", ['password' => 'eins'])->assertRedirect();
+        $this->assertTrue(Hash::check('eins', $project->fresh()->password));
+        $this->patch("/projects/{$project->id}", ['name' => 'Umbenannt'])->assertRedirect();
+        $this->assertSame('Umbenannt', $project->fresh()->name);
+        $this->assertTrue(Hash::check('eins', $project->fresh()->password));
+        $this->patch("/projects/{$project->id}", ['clear_password' => true])->assertRedirect();
+        $this->assertNull($project->fresh()->password);
+
+        $this->delete("/projects/{$project->id}")->assertRedirect();
+        $this->assertModelMissing($project);
+        $this->assertModelExists($this->site);
+        $this->assertNull($this->site->fresh()->project_id);
     }
 }

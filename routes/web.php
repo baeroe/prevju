@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
 use App\Http\Controllers\Admin\SiteController as AdminSiteController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProjectController;
@@ -24,6 +25,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/sites/{site}', [AdminSiteController::class, 'destroy']);
     Route::post('/sites/{site}/files', [AdminSiteController::class, 'upload']);
     Route::delete('/sites/{site}/files', [AdminSiteController::class, 'deleteFile']);
+    Route::post('/projects', [AdminProjectController::class, 'store']);
+    Route::get('/projects/{project}', [AdminProjectController::class, 'show']);
+    Route::patch('/projects/{project}', [AdminProjectController::class, 'update']);
+    Route::delete('/projects/{project}', [AdminProjectController::class, 'destroy']);
     Route::get('/tokens', [TokenController::class, 'index']);
     Route::post('/tokens', [TokenController::class, 'store']);
     Route::delete('/tokens/{token}', [TokenController::class, 'destroy']);
