@@ -27,6 +27,6 @@ features:
 <div class="showcase">
   <div class="crop">
     <i></i><i></i><i></i><i></i>
-    <img src="/screenshots/sites.png" alt="prevju admin: sites as cards with a live preview of each draft">
+    <img src="/screenshots/en/sites.png" alt="prevju admin: sites as cards with a live preview of each draft">
   </div>
 </div>

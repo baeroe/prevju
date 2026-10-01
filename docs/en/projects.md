@@ -8,11 +8,17 @@ In the admin, click **New project**. Then either create sites right inside it (*
 
 In the admin overview, a project's card cycles through the previews of its sites.
 
+![A project in the prevju admin: its link, the sites inside it, name and password](/screenshots/en/project.png)
+
 ## The client's page
+
+![The client's project page: all drafts as cards, newest first](/screenshots/en/client.png)
 
 The project link (`/project/<slug>`) shows a card with a live preview for each site, sorted by last change. A click opens the site. Sites without an HTML file (e.g. a new version before its upload) don't show up yet.
 
 ## Passwords
+
+![Password page of a project](/screenshots/en/password.png)
 
 - **Project password:** one password opens the project page and every site in it, also sites that have their own password.
 - **Site password:** still works. A site's own link keeps working, with or without a project.

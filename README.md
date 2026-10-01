@@ -7,7 +7,7 @@ Self-hosted previews for HTML drafts. Upload a folder, send the link to your cli
 
 **Docs: [prevju.dev](https://prevju.dev)**
 
-![prevju admin: sites as cards with a live preview](docs/public/screenshots/sites.png)
+![prevju admin: sites as cards with a live preview](docs/public/screenshots/en/sites.png)
 
 ## Quick start
 

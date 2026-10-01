@@ -107,3 +107,8 @@ div[class*='language-'] {
 .VPFooter .message a {
     margin: 0 0.35em;
 }
+
+/* screenshots share the page's paper colour; a hairline keeps their edges visible */
+.vp-doc img {
+    border: 1px solid var(--hairline);
+}

@@ -2,7 +2,7 @@
 
 Create a site in the admin, then drop files onto it.
 
-![A site in the prevju admin: link, live preview, drop zone and file list](/screenshots/site.png)
+![A site in the prevju admin: link, live preview, drop zone and file list](/screenshots/en/site.png)
 
 - **Folders:** drag a whole folder, the structure is kept. On the first upload a single wrapping folder (`dist/…`) is removed, so `dist/index.html` becomes the start page.
 - **Zips:** unpacked on upload, again without a single wrapping folder. `__MACOSX` entries are skipped.

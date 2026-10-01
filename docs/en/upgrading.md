@@ -14,6 +14,9 @@ Pinned a version? Change the tag in `docker-compose.yml` first. All versions and
 
 - New: [projects](/en/projects). One client link and one password for several sites, newest first. The database migrates on start, nothing to change on upgrade. Connected MCP clients see the new tools after a reconnect.
 - Password pages now allow 10 attempts per minute and IP.
+- The admin is in English and German, English by default. Admin URLs now start with the language (`/en/sites`); old bookmarks like `/sites` redirect. Client links don't change. See [Setup](/en/setup#language).
+- MCP error messages are now in English.
+- The docs moved under `/en/` and `/de/`, old links redirect.
 
 ### 0.3.2
 

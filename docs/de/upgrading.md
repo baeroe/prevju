@@ -14,6 +14,9 @@ Version gepinnt? Dann zuerst den Tag in der `docker-compose.yml` ändern. Alle V
 
 - Neu: [Projekte](/de/projects). Ein Kunden-Link und ein Passwort für mehrere Sites, neueste zuerst. Die Datenbank migriert beim Start, beim Update ist nichts zu tun. Verbundene MCP-Clients sehen die neuen Tools nach einem Reconnect.
 - Passwortseiten erlauben jetzt 10 Versuche pro Minute und IP.
+- Der Admin ist auf Englisch und Deutsch, Standard ist Englisch. Admin-URLs beginnen jetzt mit der Sprache (`/de/sites`), alte Lesezeichen wie `/sites` leiten weiter. Kundenlinks ändern sich nicht. Siehe [Einrichtung](/de/setup#sprache).
+- MCP-Fehlermeldungen sind jetzt auf Englisch.
+- Die Doku liegt jetzt unter `/en/` und `/de/`, alte Links leiten weiter.
 
 ### 0.3.2
 

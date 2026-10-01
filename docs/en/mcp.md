@@ -4,6 +4,8 @@ prevju has an MCP server at `<APP_URL>/mcp`. With it, Claude Code or Codex can c
 
 ## Connect
 
+![The MCP page in the prevju admin: setup command and tokens](/screenshots/en/mcp.png)
+
 Create a token in the admin under **MCP**. The page generates the command with your token filled in, for Claude Code or Codex, for all projects or just the current one.
 
 **Claude Code** (`--scope user` for all projects, `--scope local` for the current one):

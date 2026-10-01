@@ -41,7 +41,7 @@ export default defineConfig({
         ['meta', { name: 'theme-color', content: '#f4f4f1' }],
         ['meta', { property: 'og:title', content: 'prevju' }],
         ['meta', { property: 'og:description', content: 'Self-hosted previews for HTML drafts.' }],
-        ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/sites.png' }],
+        ['meta', { property: 'og:image', content: 'https://prevju.dev/screenshots/en/sites.png' }],
     ],
     appearance: false,
     // agents get the English docs only, without the legal pages

@@ -27,6 +27,6 @@ features:
 <div class="showcase">
   <div class="crop">
     <i></i><i></i><i></i><i></i>
-    <img src="/screenshots/sites.png" alt="prevju-Admin: Sites als Karten mit Live-Vorschau jedes Entwurfs">
+    <img src="/screenshots/de/sites.png" alt="prevju-Admin: Sites als Karten mit Live-Vorschau jedes Entwurfs">
   </div>
 </div>

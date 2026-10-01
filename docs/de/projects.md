@@ -8,11 +8,17 @@ Im Admin auf **Neues Projekt** klicken. Danach Sites direkt im Projekt anlegen (
 
 In der Admin-Übersicht blättert die Card eines Projekts durch die Vorschauen seiner Sites.
 
+![Ein Projekt im prevju-Admin: Link, enthaltene Sites, Name und Passwort](/screenshots/de/project.png)
+
 ## Die Seite für den Kunden
+
+![Die Projektseite für den Kunden: alle Entwürfe als Karten, neueste zuerst](/screenshots/de/client.png)
 
 Der Projekt-Link (`/project/<slug>`) zeigt für jede Site eine Card mit Live-Vorschau, sortiert nach letzter Änderung. Ein Klick öffnet die Site. Sites ohne HTML-Datei (etwa eine neue Version vor dem Upload) erscheinen dort noch nicht.
 
 ## Passwörter
+
+![Passwortseite eines Projekts](/screenshots/de/password.png)
 
 - **Projekt-Passwort:** Ein Passwort öffnet die Projektseite und alle Sites darin, auch Sites mit eigenem Passwort.
 - **Site-Passwort:** gilt weiter. Der Einzel-Link einer Site funktioniert weiter, mit oder ohne Projekt.

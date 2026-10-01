@@ -42,6 +42,13 @@ docker compose up -d
 
 Open `APP_URL` and log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`. The admin user is created on the first start.
 
+## Language
+
+The admin, the password pages and the client pages are in English and German. English is the default.
+
+- **Admin:** the language is part of the URL, `APP_URL/en/sites` or `APP_URL/de/sites`. Switch it with **EN / DE** in the header.
+- **Client pages:** the links you send stay the same. Clients switch with **EN / DE** at the top, the choice is remembered in their browser. Your own choice in the admin carries over to client pages you open in the same browser.
+
 ## What lives where
 
 - **Data:** SQLite database, uploaded sites and the generated `APP_KEY` are in the `prevju-data` volume. Containers can be recreated freely, the volume stays. Don't run `docker compose down -v`, that deletes it.
