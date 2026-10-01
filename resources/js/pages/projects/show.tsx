@@ -7,6 +7,7 @@ import { NameForm, PasswordForm } from '@/components/settings-forms';
 import { SiteTile } from '@/components/site-tile';
 import { Button } from '@/components/ui/button';
 import { deleteWithUndo } from '@/lib/delete-with-undo';
+import { moveSite } from '@/lib/move-site';
 import { siteCount } from '@/lib/format';
 import type { ProjectCard } from '@/types';
 import { path, t } from '@/lib/i18n';
@@ -16,9 +17,9 @@ export default function ProjectShow({ project }: { project: ProjectCard }) {
         <AppLayout actions={<NewSiteDialog projectId={project.id} />}>
             <Head title={project.name} />
 
-            <Link href={path('/sites')} className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
+            <Link href={path('/projects')} className="inline-flex items-center gap-1.5 text-sm text-ink-muted hover:text-ink">
                 <ArrowLeft className="size-4" aria-hidden />
-                {t('common.all_sites')}
+                {t('projects.all')}
             </Link>
             <p className="mt-4 text-sm text-ink-muted">{t('project.label')}</p>
             <h1 className="mt-1 text-3xl leading-tight font-semibold tracking-tight text-balance break-words">{project.name}</h1>
@@ -37,7 +38,7 @@ export default function ProjectShow({ project }: { project: ProjectCard }) {
                     ) : (
                         <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))] gap-x-12 gap-y-14 px-5">
                             {project.sites.map((site) => (
-                                <SiteTile key={site.id} site={site} />
+                                <SiteTile key={site.id} site={site} onRemove={() => moveSite(site, null, [])} />
                             ))}
                         </ul>
                     )}
@@ -62,7 +63,7 @@ export default function ProjectShow({ project }: { project: ProjectCard }) {
                             variant="danger"
                             className="justify-self-start"
                             onClick={() =>
-                                router.visit(path('/sites'), {
+                                router.visit(path('/projects'), {
                                     onSuccess: () =>
                                         deleteWithUndo({ key: `project:${project.id}`, url: path(`/projects/${project.id}`), message: t('common.deleted', { name: project.name }) }),
                                 })

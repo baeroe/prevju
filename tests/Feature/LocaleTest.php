@@ -33,7 +33,7 @@ class LocaleTest extends TestCase
 
     public function test_unprefixed_admin_urls_redirect(): void
     {
-        $this->get('/')->assertRedirect('/en/sites');
+        $this->get('/')->assertRedirect('/en/projects');
         $this->get('/login')->assertRedirect('/en/login');
         $this->withCookie('locale', 'de')->get('/sites/3')->assertRedirect('/de/sites/3');
     }
@@ -103,5 +103,12 @@ class LocaleTest extends TestCase
 
         $this->get('/en/sites/1')->assertRedirect('/en/login');
         $this->post('/de/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect(url('/de/sites/1'));
+    }
+
+    public function test_login_without_a_previous_page_lands_on_projects(): void
+    {
+        User::factory()->create(['email' => 'a@b.de', 'password' => Hash::make('secret123')]);
+
+        $this->post('/de/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect(url('/de/projects'));
     }
 }

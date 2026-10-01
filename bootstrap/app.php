@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [SetLocale::class, HandleInertiaRequests::class]);
-        $middleware->redirectUsersTo(fn () => route('sites.index'));
+        $middleware->redirectUsersTo(fn () => route('projects.index'));
         // auth runs before SetLocale, so take the language straight from the prefix
         $middleware->redirectGuestsTo(fn (Request $request) => route('login', ['locale' => $request->route('locale') ?? app()->getLocale()]));
         // reverse proxy (NPM, Traefik, Caddy) in front: honour X-Forwarded-Proto so URLs are https.

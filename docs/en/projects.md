@@ -4,9 +4,21 @@ A project bundles several sites behind one link. Send your client the project li
 
 ## Create a project
 
-In the admin, click **New project**. Then either create sites right inside it (**New site** on the project page) or open an existing site and pick the project under **Project**. A site belongs to at most one project.
+The admin opens on **Projects**. Click **New project**, then create sites right inside it with **New site** on the project page. Each project's card cycles through the previews of its sites.
 
-In the admin overview, a project's card cycles through the previews of its sites.
+![The projects page in the prevju admin](/screenshots/en/projects.png)
+
+## Move sites into a project
+
+**Sites** lists every site, with your projects on the left. A site belongs to at most one project.
+
+- **Drag** a site onto a project on the left. Drop it on **Without project** to take it out again.
+- **Or click** the project label on a card (**+ Project** if it has none) and pick a project or **No project**. This works on phones and with the keyboard too.
+- On a project's page, the **×** on a card takes the site out of the project.
+
+Every move shows a message with **Undo**. Click a project on the left to see only its sites.
+
+![The sites page: projects on the left, a project label on each card](/screenshots/en/sites.png)
 
 ![A project in the prevju admin: its link, the sites inside it, name and password](/screenshots/en/project.png)
 

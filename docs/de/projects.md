@@ -4,9 +4,21 @@ Ein Projekt bündelt mehrere Sites hinter einem Link. Statt eines Links pro Entw
 
 ## Projekt anlegen
 
-Im Admin auf **Neues Projekt** klicken. Danach Sites direkt im Projekt anlegen (**Neue Site** auf der Projektseite) oder eine bestehende Site öffnen und unter **Projekt** das Projekt wählen. Eine Site gehört zu höchstens einem Projekt.
+Der Admin startet bei **Projekte**. Auf **Neues Projekt** klicken und danach Sites direkt im Projekt anlegen, mit **Neue Site** auf der Projektseite. Die Card eines Projekts blättert durch die Vorschauen seiner Sites.
 
-In der Admin-Übersicht blättert die Card eines Projekts durch die Vorschauen seiner Sites.
+![Die Projekte-Seite im prevju-Admin](/screenshots/de/projects.png)
+
+## Sites in ein Projekt verschieben
+
+**Sites** zeigt alle Sites, links stehen deine Projekte. Eine Site gehört zu höchstens einem Projekt.
+
+- **Ziehen:** eine Site links auf ein Projekt ziehen. Auf **Ohne Projekt** gezogen, ist sie wieder draußen.
+- **Oder klicken:** das Projekt-Label auf einer Card (**+ Projekt**, wenn sie keins hat) öffnet die Liste, dort ein Projekt oder **Kein Projekt** wählen. Das geht auch auf dem Handy und mit der Tastatur.
+- Auf der Seite eines Projekts nimmt das **×** auf einer Card die Site aus dem Projekt.
+
+Jedes Verschieben zeigt eine Meldung mit **Rückgängig**. Ein Klick auf ein Projekt links zeigt nur dessen Sites.
+
+![Die Sites-Seite: links die Projekte, auf jeder Card ein Projekt-Label](/screenshots/de/sites.png)
 
 ![Ein Projekt im prevju-Admin: Link, enthaltene Sites, Name und Passwort](/screenshots/de/project.png)
 

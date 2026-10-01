@@ -10,6 +10,13 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
+    public function index()
+    {
+        return Inertia::render('projects/index', [
+            'projects' => Project::with('sites')->latest('updated_at')->get()->map->adminCard(),
+        ]);
+    }
+
     public function show(Project $project)
     {
         return Inertia::render('projects/show', ['project' => $project->adminCard()]);

@@ -14,8 +14,9 @@ class SiteController extends Controller
     public function index()
     {
         return Inertia::render('sites/index', [
-            'projects' => Project::with('sites')->latest('updated_at')->get()->map->adminCard(),
-            'sites' => Site::whereNull('project_id')->latest('updated_at')->get()->map->adminCard(),
+            'sites' => Site::latest('updated_at')->get()->map->adminCard(),
+            // targets for the sidebar and the move menu on each card
+            'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
     }
 

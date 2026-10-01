@@ -28,14 +28,16 @@ export function NewSiteDialog({ trigger, projectId }: { trigger?: React.ReactNod
     );
 }
 
-export function NewProjectDialog() {
+export function NewProjectDialog({ trigger }: { trigger?: React.ReactNode }) {
     return (
         <CreateDialog
             trigger={
-                <Button variant="outline">
-                    <FolderPlus />
-                    <span className="max-sm:sr-only">{t('project.new')}</span>
-                </Button>
+                trigger ?? (
+                    <Button variant="outline">
+                        <FolderPlus />
+                        <span className="max-sm:sr-only">{t('project.new')}</span>
+                    </Button>
+                )
             }
             title={t('project.new')}
             description={t('project.new_hint')}

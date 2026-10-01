@@ -24,7 +24,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
 
         // back to the page that asked for the login, but in the language the login was done in
-        $intended = $request->session()->pull('url.intended', route('sites.index'));
+        $intended = $request->session()->pull('url.intended', route('projects.index'));
 
         return redirect(preg_replace('#^('.preg_quote(url('/'), '#').')/(en|de)(?=/|$)#', '$1/'.app()->getLocale(), $intended));
     }

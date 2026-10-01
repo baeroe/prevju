@@ -26,6 +26,7 @@ Route::prefix('{locale}')->where(['locale' => 'en|de'])->group(function () {
         Route::delete('/sites/{site}', [AdminSiteController::class, 'destroy']);
         Route::post('/sites/{site}/files', [AdminSiteController::class, 'upload']);
         Route::delete('/sites/{site}/files', [AdminSiteController::class, 'deleteFile']);
+        Route::get('/projects', [AdminProjectController::class, 'index'])->name('projects.index');
         Route::post('/projects', [AdminProjectController::class, 'store']);
         Route::get('/projects/{project}', [AdminProjectController::class, 'show'])->name('projects.show');
         Route::patch('/projects/{project}', [AdminProjectController::class, 'update']);
@@ -37,7 +38,7 @@ Route::prefix('{locale}')->where(['locale' => 'en|de'])->group(function () {
 });
 
 // bookmarks from before the language prefix: / and /sites/3 go to /<last language or en>/…
-Route::get('/{path?}', fn (string $path = 'sites') => redirect('/'.app()->getLocale().'/'.$path))
+Route::get('/{path?}', fn (string $path = 'projects') => redirect('/'.app()->getLocale().'/'.$path))
     ->where('path', '(sites|projects|tokens|login)(/.*)?');
 
 // language switch for the client pages, which keep their URLs

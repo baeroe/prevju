@@ -46,7 +46,7 @@ class AdminTest extends TestCase
 
         $this->get('/en/sites')->assertRedirect('/en/login');
         $this->post('/en/login', ['email' => 'a@b.de', 'password' => 'wrong'])->assertSessionHasErrors('email');
-        $this->post('/en/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect('/en/sites');
+        $this->post('/en/login', ['email' => 'a@b.de', 'password' => 'secret123'])->assertRedirect(url('/en/sites'));
         $this->assertAuthenticatedAs($user);
 
         auth()->logout();
@@ -158,21 +158,34 @@ class AdminTest extends TestCase
         $this->assertDirectoryDoesNotExist(storage_path('app/sites/abc123'));
     }
 
-    public function test_index_shows_projects_with_their_sites_and_only_loose_sites(): void
+    public function test_projects_page_lists_projects_with_their_sites(): void
     {
         $project = Project::create(['name' => 'Bäckerei Kurz', 'password' => Hash::make('pw')]);
         Site::create(['name' => 'v1', 'slug' => 'projv1', 'project_id' => $project->id]);
 
-        $this->get('/en/sites')->assertInertia(fn (Assert $page) => $page
-            ->component('sites/index')
+        $this->get('/en/projects')->assertInertia(fn (Assert $page) => $page
+            ->component('projects/index')
             ->has('projects', 1)
             ->where('projects.0.name', 'Bäckerei Kurz')
             ->where('projects.0.has_password', true)
             ->where('projects.0.site_count', 1)
             ->where('projects.0.sites.0.name', 'v1')
-            ->missing('projects.0.password')
-            ->has('sites', 1)
-            ->where('sites.0.name', 'Test'));
+            ->missing('projects.0.password'));
+    }
+
+    public function test_sites_page_lists_all_sites_and_the_projects_to_move_them_to(): void
+    {
+        $project = Project::create(['name' => 'Bäckerei Kurz']);
+        $this->travel(1)->minutes();
+        Site::create(['name' => 'v1', 'slug' => 'projv1', 'project_id' => $project->id]);
+
+        $this->get('/en/sites')->assertInertia(fn (Assert $page) => $page
+            ->component('sites/index')
+            ->has('sites', 2)
+            ->where('sites.0.name', 'v1')
+            ->where('sites.0.project_id', $project->id)
+            ->where('sites.1.name', 'Test')
+            ->where('projects.0', ['id' => $project->id, 'name' => 'Bäckerei Kurz']));
     }
 
     public function test_create_project_and_site_inside_it(): void
