@@ -6,7 +6,7 @@ COPY vite.config.ts tsconfig.json ./
 COPY resources ./resources
 RUN npm run build
 
-FROM serversideup/php:8.4-fpm-nginx
+FROM serversideup/php:8.4.27-fpm-nginx
 LABEL org.opencontainers.image.source=https://github.com/baeroe/prevju
 
 ENV AUTORUN_ENABLED=false \
