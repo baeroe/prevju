@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tooltip } from '@/components/ui/tooltip';
 import { timeAgo } from '@/lib/format';
-import { path, t } from '@/lib/i18n';
+import { getLocale, path, t } from '@/lib/i18n';
 
 type Token = { id: number; name: string; created_at: string; last_used_at: string | null };
 
-export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string; tokens: Token[]; new_token: string | null }) {
+export default function Tokens({ mcp_url, api_url, tokens, new_token }: { mcp_url: string; api_url: string; tokens: Token[]; new_token: string | null }) {
     const form = useForm({ name: '' });
     const [client, setClient] = useState<Client>('claude');
     const [scope, setScope] = useState<Scope>('user');
@@ -20,8 +20,8 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
 
     return (
         <AppLayout>
-            <Head title="MCP" />
-            <h1 className="text-3xl leading-none font-semibold tracking-tight">MCP</h1>
+            <Head title="API & MCP" />
+            <h1 className="text-3xl leading-none font-semibold tracking-tight">API & MCP</h1>
             <p className="mt-4 max-w-[62ch] text-ink-muted">
                 {t('tokens.intro')}
             </p>
@@ -63,6 +63,17 @@ export default function Tokens({ mcp_url, tokens, new_token }: { mcp_url: string
                             {t('tokens.endpoint')} <span className="font-mono text-xs text-ink">{mcp_url}</span>
                             {t('tokens.auth')}
                         </p>
+                    </div>
+
+                    <div className="grid gap-3">
+                        <h2 className="font-medium">{t('tokens.api_title')}</h2>
+                        <p className="text-sm text-ink-muted">
+                            {t('tokens.api_intro')}{' '}
+                            <a href={`https://prevju.dev/${getLocale()}/api`} target="_blank" rel="noreferrer" className="text-ink underline underline-offset-4">
+                                {t('tokens.api_docs')}
+                            </a>
+                        </p>
+                        <CopyField value={`curl -H "Authorization: Bearer ${new_token ?? '<token>'}" ${api_url}/sites`} label={t('tokens.copy_command')} />
                     </div>
                 </section>
 

@@ -4,7 +4,7 @@ import llmstxt from 'vitepress-plugin-llms';
 const pages = (prefix: string, t: Record<string, string>): DefaultTheme.SidebarItem[] => [
     {
         text: t.guide,
-        items: ['setup', 'reverse-proxy', 'uploading', 'projects', 'what-works', 'mcp', 'upgrading'].map((p) => ({ text: t[p], link: `${prefix}/${p}` })),
+        items: ['setup', 'reverse-proxy', 'uploading', 'projects', 'visits', 'what-works', 'api', 'mcp', 'upgrading'].map((p) => ({ text: t[p], link: `${prefix}/${p}` })),
     },
 ];
 
@@ -14,6 +14,8 @@ const en = {
     'reverse-proxy': 'Reverse proxy',
     uploading: 'Uploading',
     projects: 'Projects',
+    visits: 'Visits',
+    api: 'REST API',
     'what-works': 'What works',
     mcp: 'MCP',
     upgrading: 'Upgrading',
@@ -25,6 +27,8 @@ const de = {
     'reverse-proxy': 'Reverse-Proxy',
     uploading: 'Hochladen',
     projects: 'Projekte',
+    visits: 'Aufrufe',
+    api: 'REST-API',
     'what-works': 'Was funktioniert',
     mcp: 'MCP',
     upgrading: 'Aktualisieren',

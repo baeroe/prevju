@@ -1,11 +1,12 @@
 import { Link } from '@inertiajs/react';
-import { ExternalLink, Lock, X } from 'lucide-react';
+import { ExternalLink, Eye, Lock, X } from 'lucide-react';
 import { CopyLinkIcon } from '@/components/copy-link';
 import { CropFrame } from '@/components/crop-frame';
 import { ProjectMenu } from '@/components/project-menu';
 import { SitePreview } from '@/components/site-preview';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
+import { lastOpened } from '@/components/visit-list';
 import { useIsHidden } from '@/lib/delete-with-undo';
 import { fileCount, shortUrl, timeAgo } from '@/lib/format';
 import { SITE_DRAG_TYPE } from '@/lib/move-site';
@@ -84,6 +85,10 @@ export function SiteTile({ site, projects, onRemove }: Props) {
                     </span>
                 )}
                 <span>{t('common.changed', { time: timeAgo(site.updated_at) })}</span>
+                <span className="inline-flex items-center gap-1">
+                    <Eye className="size-3" aria-hidden />
+                    {lastOpened(site)}
+                </span>
             </p>
         </li>
     );

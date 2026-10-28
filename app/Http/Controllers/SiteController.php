@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Site;
+use App\Models\Visit;
+use App\Support\VisitRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +25,7 @@ class SiteController extends Controller
             ], 401);
         }
 
-        return $this->serve($request, $site, $path);
+        return $this->serve($request, $site, $path, track: true);
     }
 
     public function preview(Request $request, string $signature, string $slug, string $path = '')
@@ -34,7 +36,8 @@ class SiteController extends Controller
         return $this->serve($request, $site, $path);
     }
 
-    private function serve(Request $request, Site $site, string $path)
+    /** $track: count HTML pages as visits; assets and the admin's preview iframes are not counted. */
+    private function serve(Request $request, Site $site, string $path, bool $track = false)
     {
         $root = realpath($site->dir()) ?: abort(404);
         $file = realpath($root.'/'.($path ?: '.'));
@@ -53,6 +56,9 @@ class SiteController extends Controller
         }
 
         $ext = pathinfo($file, PATHINFO_EXTENSION);
+        if ($track && in_array(strtolower($ext), ['html', 'htm'])) {
+            VisitRecorder::record($request, Visit::VIEW, site: $site, path: '/'.$path);
+        }
         $mime = MimeTypes::getDefault()->getMimeTypes($ext)[0] ?? 'application/octet-stream';
 
         return response()->file($file, ['Content-Type' => $mime]);
@@ -63,10 +69,13 @@ class SiteController extends Controller
         $site = Site::where('slug', $slug)->firstOrFail();
 
         if (! Hash::check($request->input('password', ''), $site->password)) {
+            VisitRecorder::record($request, Visit::UNLOCK_FAILED, site: $site);
+
             return back()->withErrors(['password' => __('password.wrong')]);
         }
 
         $request->session()->put("site.{$site->id}", true);
+        VisitRecorder::record($request, Visit::UNLOCK, site: $site);
 
         return redirect()->away($site->url());
     }

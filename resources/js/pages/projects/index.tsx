@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { FolderPlus, Layers, Lock, Search } from 'lucide-react';
+import { Eye, FolderPlus, Layers, Lock, Search } from 'lucide-react';
 import { useState } from 'react';
 import { AppLayout } from '@/components/app-layout';
 import { CopyLinkIcon } from '@/components/copy-link';
@@ -8,6 +8,7 @@ import { NewProjectDialog } from '@/components/new-site-dialog';
 import { ProjectPreview } from '@/components/project-preview';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { lastOpened } from '@/components/visit-list';
 import { useIsHidden } from '@/lib/delete-with-undo';
 import { shortUrl, siteCount, timeAgo } from '@/lib/format';
 import { path, t } from '@/lib/i18n';
@@ -110,6 +111,10 @@ function ProjectTile({ project }: { project: ProjectCard }) {
                     </span>
                 )}
                 <span>{t('common.changed', { time: timeAgo(project.updated_at) })}</span>
+                <span className="inline-flex items-center gap-1">
+                    <Eye className="size-3" aria-hidden />
+                    {lastOpened(project)}
+                </span>
             </p>
         </li>
     );

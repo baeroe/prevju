@@ -29,3 +29,10 @@ export function shortUrl(url: string): string {
 export function siteCount(n: number): string {
     return tn('sites.count', n);
 }
+
+/** 28 Oct, 14:32 (with the year only if it isn't this year). */
+export function dateTime(iso: string): string {
+    const date = new Date(iso);
+    const sameYear = date.getFullYear() === new Date().getFullYear();
+    return new Intl.DateTimeFormat(getLocale(), { day: 'numeric', month: 'short', year: sameYear ? undefined : 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+}

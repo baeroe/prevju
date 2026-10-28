@@ -6,13 +6,24 @@ import { NewSiteDialog } from '@/components/new-site-dialog';
 import { NameForm, PasswordForm } from '@/components/settings-forms';
 import { SiteTile } from '@/components/site-tile';
 import { Button } from '@/components/ui/button';
+import { VisitList } from '@/components/visit-list';
 import { deleteWithUndo } from '@/lib/delete-with-undo';
 import { moveSite } from '@/lib/move-site';
 import { siteCount } from '@/lib/format';
-import type { ProjectCard, ProjectOption } from '@/types';
+import type { ProjectCard, ProjectOption, Visit } from '@/types';
 import { path, t } from '@/lib/i18n';
 
-export default function ProjectShow({ project, projects }: { project: ProjectCard; projects: ProjectOption[] }) {
+export default function ProjectShow({
+    project,
+    projects,
+    visits,
+    visit_days,
+}: {
+    project: ProjectCard;
+    projects: ProjectOption[];
+    visits: Visit[];
+    visit_days: number;
+}) {
     return (
         <AppLayout>
             <Head title={project.name} />
@@ -57,6 +68,7 @@ export default function ProjectShow({ project, projects }: { project: ProjectCar
                 </section>
 
                 <div className="grid content-start gap-12">
+                    <VisitList stats={project} visits={visits} days={visit_days} siteNames={Object.fromEntries(project.sites.map((s) => [s.id, s.name]))} />
                     <NameForm endpoint={path(`/projects/${project.id}`)} id="project" name={project.name} />
                     <PasswordForm
                         endpoint={path(`/projects/${project.id}`)}

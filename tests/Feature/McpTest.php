@@ -7,6 +7,7 @@ use App\Mcp\Tools;
 use App\Models\Project;
 use App\Models\Site;
 use App\Models\User;
+use App\Models\Visit;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
@@ -53,7 +54,7 @@ class McpTest extends TestCase
         $this->postJson('/mcp', $call, ['Authorization' => "Bearer {$token->plainTextToken}"])
             ->assertOk()
             ->assertJsonPath('result.tools.0.name', 'get-compatibility')
-            ->assertJsonCount(12, 'result.tools');
+            ->assertJsonCount(13, 'result.tools');
 
         $token->accessToken->delete();
         auth()->forgetGuards();
@@ -112,6 +113,21 @@ class McpTest extends TestCase
             ->assertSee(['css/style.css', 'index.html']);
 
         PrevjuServer::tool(Tools\GetSite::class, ['site_id' => 999])->assertHasErrors(['No site with ID 999.']);
+    }
+
+    public function test_list_visits_for_site_and_project(): void
+    {
+        $project = Project::create(['name' => 'Relaunch']);
+        $this->site->update(['project_id' => $project->id]);
+        Visit::create(['site_id' => $this->site->id, 'kind' => Visit::VIEW, 'visitor' => 'a1b2', 'device' => 'mobile', 'browser' => 'Safari']);
+        Visit::create(['project_id' => $project->id, 'kind' => Visit::VIEW, 'visitor' => 'a1b2', 'device' => 'mobile']);
+
+        PrevjuServer::tool(Tools\ListVisits::class, ['site_id' => $this->site->id])
+            ->assertOk()
+            ->assertSee(['"view_count":1', '"browser":"Safari"']);
+        PrevjuServer::tool(Tools\ListVisits::class, ['project_id' => $project->id])->assertOk()->assertSee('"view_count":2');
+        PrevjuServer::tool(Tools\ListVisits::class, ['site_id' => 999])->assertHasErrors(['No site with ID 999.']);
+        PrevjuServer::tool(Tools\ListVisits::class, [])->assertHasErrors();
     }
 
     // --- create / update ---

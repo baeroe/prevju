@@ -158,6 +158,12 @@ class AdminTest extends TestCase
         $this->assertDirectoryDoesNotExist(storage_path('app/sites/abc123'));
     }
 
+    public function test_delete_site_without_files(): void
+    {
+        $this->delete("/en/sites/{$this->site->id}")->assertRedirect();
+        $this->assertModelMissing($this->site);
+    }
+
     public function test_projects_page_lists_projects_with_their_sites(): void
     {
         $project = Project::create(['name' => 'Bäckerei Kurz', 'password' => Hash::make('pw')]);
