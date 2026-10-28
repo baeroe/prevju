@@ -11,6 +11,7 @@ class TokenController extends Controller
     {
         return Inertia::render('tokens', [
             'mcp_url' => url('/mcp'),
+            'api_url' => url('/api'),
             'tokens' => $request->user()->tokens()->latest()->get()->map(fn ($t) => [
                 'id' => $t->id,
                 'name' => $t->name,

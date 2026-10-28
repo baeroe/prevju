@@ -49,7 +49,7 @@ export function AppLayout({ actions, children }: { actions?: React.ReactNode; ch
                         {actions}
                         <LocaleSwitch />
                         <Button variant="ghost" className="max-sm:px-2" asChild>
-                            <Link href={path('/tokens')}>MCP</Link>
+                            <Link href={path('/tokens')}>API & MCP</Link>
                         </Button>
                         <Tooltip label={t('nav.logout')}>
                             <Button variant="ghost" size="icon" aria-label={t('nav.logout')} onClick={() => router.post(path('/logout'))}>

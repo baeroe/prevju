@@ -9,6 +9,7 @@ services:
       APP_URL: "${APP_URL:-http://localhost:7738}"
       ADMIN_EMAIL: "${ADMIN_EMAIL:?ADMIN_EMAIL missing}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD:?ADMIN_PASSWORD missing}"
+      VISITS_RETENTION_DAYS: "${VISITS_RETENTION_DAYS:-90}"
     volumes:
       - prevju-data:/var/www/html/storage/app
 

@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Models\Visit;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -13,14 +13,16 @@ class ProjectController extends Controller
     public function index()
     {
         return Inertia::render('projects/index', [
-            'projects' => Project::with('sites')->latest('updated_at')->get()->map->adminCard(),
+            'projects' => Project::with(['sites' => fn ($q) => $q->withVisitStats()])->latest('updated_at')->get()->map->adminCard(),
         ]);
     }
 
     public function show(Project $project)
     {
         return Inertia::render('projects/show', [
-            'project' => $project->adminCard(),
+            'project' => $project->load(['sites' => fn ($q) => $q->withVisitStats()])->adminCard(),
+            'visits' => Visit::forProject($project)->latest()->limit(100)->get()->map->summary(),
+            'visit_days' => config('prevju.visits_retention_days'),
             // for the project field of the new-site dialog
             'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
@@ -28,29 +30,15 @@ class ProjectController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate(['name' => 'required|string|max:255', 'password' => 'nullable|string|max:255']);
-        $project = Project::create([...$data, 'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null]);
+        $project = (new Project)->applySettings($request->validate(Project::rules(creating: true)));
+        $project->save();
 
         return redirect()->route('projects.show', $project);
     }
 
     public function update(Request $request, Project $project)
     {
-        $data = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'password' => 'nullable|string|max:255',
-            'clear_password' => 'boolean',
-        ]);
-
-        if (isset($data['name'])) {
-            $project->name = $data['name'];
-        }
-        if (filled($data['password'] ?? null)) {
-            $project->password = Hash::make($data['password']);
-        } elseif ($data['clear_password'] ?? false) {
-            $project->password = null;
-        }
-        $project->save();
+        $project->applySettings($request->validate(Project::rules()))->save();
 
         return back();
     }

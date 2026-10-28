@@ -10,6 +10,14 @@ Pinned a version? Change the tag in `docker-compose.yml` first. All versions and
 
 ## Notes per version
 
+### 0.5
+
+- New: [visits](/en/visits). Cards show when a site or project was last opened, the site and project pages list each visit with device and browser. Anonymous: no IP addresses, no cookies. Visits are kept for 90 days; change it with `VISITS_RETENTION_DAYS` (`0` turns counting off) and pass it on in `docker-compose.yml`. Mention it in your privacy policy.
+- New: [REST API](/en/api) below `/api` for sites, projects, files and visits, with the same tokens as MCP. The admin page for tokens is now called **API & MCP**.
+- New MCP tool `list-visits`. Connected MCP clients see it after a reconnect.
+- Fix: sites without files can be deleted again.
+- The database migrates on start, nothing else to do on upgrade.
+
 ### 0.4
 
 - New: [projects](/en/projects). One client link and one password for several sites, newest first. The database migrates on start, nothing to change on upgrade. Connected MCP clients see the new tools after a reconnect.

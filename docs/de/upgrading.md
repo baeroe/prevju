@@ -10,6 +10,14 @@ Version gepinnt? Dann zuerst den Tag in der `docker-compose.yml` ändern. Alle V
 
 ## Hinweise pro Version
 
+### 0.5
+
+- Neu: [Aufrufe](/de/visits). Die Cards zeigen, wann eine Site oder ein Projekt zuletzt geöffnet wurde, die Seiten einer Site und eines Projekts listen jeden Aufruf mit Gerät und Browser. Anonym: keine IP-Adressen, keine Cookies. Aufrufe bleiben 90 Tage gespeichert; ändern lässt sich das mit `VISITS_RETENTION_DAYS` (`0` schaltet die Zählung ab), durchgereicht in `docker-compose.yml`. Erwähne die Zählung in deiner Datenschutzerklärung.
+- Neu: [REST-API](/de/api) unter `/api` für Sites, Projekte, Dateien und Aufrufe, mit denselben Tokens wie MCP. Die Token-Seite im Admin heißt jetzt **API & MCP**.
+- Neues MCP-Tool `list-visits`. Verbundene MCP-Clients sehen es nach einem Reconnect.
+- Fix: Sites ohne Dateien lassen sich wieder löschen.
+- Die Datenbank migriert beim Start, sonst ist beim Update nichts zu tun.
+
 ### 0.4
 
 - Neu: [Projekte](/de/projects). Ein Kunden-Link und ein Passwort für mehrere Sites, neueste zuerst. Die Datenbank migriert beim Start, beim Update ist nichts zu tun. Verbundene MCP-Clients sehen die neuen Tools nach einem Reconnect.

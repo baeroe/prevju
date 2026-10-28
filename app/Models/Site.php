@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -25,12 +29,68 @@ class Site extends Model
     protected static function booted(): void
     {
         static::creating(fn (Site $site) => $site->slug ??= Str::lower(Str::random(10)));
-        static::deleting(fn (Site $site) => File::deleteDirectory($site->dir()));
+        // a block, not an arrow fn: deleteDirectory() returns false without a folder, and false cancels the delete
+        static::deleting(function (Site $site) {
+            File::deleteDirectory($site->dir());
+        });
     }
 
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function visits(): HasMany
+    {
+        return $this->hasMany(Visit::class);
+    }
+
+    /** Loads view_count and last_viewed_at in the list query instead of two queries per site. */
+    public function scopeWithVisitStats(Builder $query): void
+    {
+        $query->withCount(['visits as view_count' => fn ($q) => $q->views()])
+            ->withMax(['visits as last_viewed_at' => fn ($q) => $q->views()], 'created_at');
+    }
+
+    /** How often clients opened the site and when last; admin and API only, never on client pages. */
+    public function visitStats(): array
+    {
+        $loaded = array_key_exists('view_count', $this->attributes);
+        $last = $loaded ? $this->attributes['last_viewed_at'] : $this->visits()->views()->max('created_at');
+
+        return [
+            'view_count' => $loaded ? (int) $this->attributes['view_count'] : $this->visits()->views()->count(),
+            'last_viewed_at' => $last ? Carbon::parse($last)->toIso8601String() : null,
+        ];
+    }
+
+    /** Validation for create (all required fields) and update (only what is sent), shared by admin and API. */
+    public static function rules(bool $creating = false): array
+    {
+        return [
+            'name' => ($creating ? 'required' : 'sometimes|required').'|string|max:255',
+            'password' => 'nullable|string|max:255',
+            'clear_password' => 'boolean',
+            'project_id' => 'sometimes|nullable|integer|exists:projects,id',
+        ];
+    }
+
+    /** Apply validated rules() data: an empty password keeps the old one, project_id null takes the site out of its project. */
+    public function applySettings(array $data): static
+    {
+        if (isset($data['name'])) {
+            $this->name = $data['name'];
+        }
+        if (filled($data['password'] ?? null)) {
+            $this->password = Hash::make($data['password']);
+        } elseif ($data['clear_password'] ?? false) {
+            $this->password = null;
+        }
+        if (array_key_exists('project_id', $data)) {
+            $this->project_id = $data['project_id'];
+        }
+
+        return $this;
     }
 
     /** Open without password, for the logged-in admin, after unlocking the site, or after unlocking its protected project. */
@@ -83,10 +143,10 @@ class Site extends Model
         ];
     }
 
-    /** summary() plus the signed preview URL: admin only, the URL skips the password. */
+    /** summary() plus visit stats and the signed preview URL: admin only, the URL skips the password. */
     public function adminCard(): array
     {
-        return [...$this->summary(), 'preview_url' => $this->previewUrl()];
+        return [...$this->summary(), ...$this->visitStats(), 'preview_url' => $this->previewUrl()];
     }
 
     /** Relative paths of all files on disk, e.g. "css/style.css". */

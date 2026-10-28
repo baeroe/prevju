@@ -9,7 +9,7 @@ const VIEWPORT = 1280;
  * Live, non-interactive thumbnail: the real site in an iframe rendered at desktop width and scaled down.
  * ponytail: one iframe per card loads each whole site; fine for dozens, screenshots if it gets to hundreds.
  */
-export function SitePreview({ site }: { site: SiteCard }) {
+export function SitePreview({ site }: { site: Pick<SiteCard, 'name' | 'preview_url' | 'has_html' | 'file_count' | 'updated_at'> }) {
     const box = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(0);
 

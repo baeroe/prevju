@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Site;
+use App\Models\Visit;
+use App\Support\VisitRecorder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -24,6 +26,8 @@ class ProjectController extends Controller
             ], 401);
         }
 
+        VisitRecorder::record($request, Visit::VIEW, project: $project);
+
         return Inertia::render('projects/public', [
             'project' => ['name' => $project->name],
             'sites' => $project->sites
@@ -43,10 +47,13 @@ class ProjectController extends Controller
         $project = Project::where('slug', $slug)->firstOrFail();
 
         if (! Hash::check($request->input('password', ''), $project->password)) {
+            VisitRecorder::record($request, Visit::UNLOCK_FAILED, project: $project);
+
             return back()->withErrors(['password' => __('password.wrong')]);
         }
 
         $request->session()->put("project.{$project->id}", true);
+        VisitRecorder::record($request, Visit::UNLOCK, project: $project);
 
         return redirect()->away($project->url());
     }

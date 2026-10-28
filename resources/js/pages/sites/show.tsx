@@ -10,12 +10,13 @@ import { SitePreview } from '@/components/site-preview';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Tooltip } from '@/components/ui/tooltip';
+import { VisitList } from '@/components/visit-list';
 import { deleteWithUndo, useIsHidden } from '@/lib/delete-with-undo';
 import { fileCount } from '@/lib/format';
-import type { ProjectOption, SiteDetail } from '@/types';
+import type { ProjectOption, SiteDetail, Visit } from '@/types';
 import { path, t } from '@/lib/i18n';
 
-export default function SiteShow({ site, projects }: { site: SiteDetail; projects: ProjectOption[] }) {
+export default function SiteShow({ site, projects, visits, visit_days }: { site: SiteDetail; projects: ProjectOption[]; visits: Visit[]; visit_days: number }) {
     const empty = site.file_count === 0;
     const project = projects.find((p) => p.id === site.project_id);
 
@@ -43,6 +44,7 @@ export default function SiteShow({ site, projects }: { site: SiteDetail; project
 
                 <div className="grid content-start gap-12">
                     <FileList site={site} />
+                    <VisitList stats={site} visits={visits} days={visit_days} />
                     <NameForm endpoint={path(`/sites/${site.id}`)} id="site" name={site.name} />
                     <ProjectSelect site={site} projects={projects} />
                     <PasswordForm

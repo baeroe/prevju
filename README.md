@@ -50,7 +50,8 @@ Open `APP_URL`, log in with `ADMIN_EMAIL` / `ADMIN_PASSWORD`. HTTPS via a revers
 
 - [Setup](https://prevju.dev/en/setup) and [Reverse proxy](https://prevju.dev/en/reverse-proxy)
 - [What works](https://prevju.dev/en/what-works): relative paths, Vite/CRA builds, SPA routing
-- [MCP](https://prevju.dev/en/mcp): upload drafts from Claude Code or Codex
+- [Visits](https://prevju.dev/en/visits): see when the client opened the link, without cookies or IPs
+- [REST API](https://prevju.dev/en/api) and [MCP](https://prevju.dev/en/mcp): upload drafts from scripts, Claude Code or Codex
 - [Upgrading](https://prevju.dev/en/upgrading)
 
 The docs live in [`docs/`](docs) (VitePress). Run them locally with `cd docs && npm install && npm run dev`.

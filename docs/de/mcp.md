@@ -6,7 +6,7 @@ prevju hat einen MCP-Server unter `<APP_URL>/mcp`. Damit legen Claude Code oder 
 
 ![Die MCP-Seite im prevju-Admin: Befehl zum Einrichten und Tokens](/screenshots/de/mcp.png)
 
-Leg im Admin unter **MCP** ein Token an. Die Seite erzeugt den Befehl mit deinem Token, für Claude Code oder Codex, für alle Projekte oder nur das aktuelle.
+Leg im Admin unter **API & MCP** ein Token an. Dasselbe Token gilt auch für die [REST-API](/de/api). Die Seite erzeugt den Befehl mit deinem Token, für Claude Code oder Codex, für alle Projekte oder nur das aktuelle.
 
 **Claude Code** (`--scope user` für alle Projekte, `--scope local` für das aktuelle):
 
@@ -35,6 +35,7 @@ Ein Token hat dieselben Rechte wie der Admin-Login. Leg pro Gerät eins an, dann
 | `list-projects`, `create-project` | [Projekte](/de/projects): ein Kunden-Link für mehrere Sites |
 | `write-files` | Generierte Textdateien (HTML, CSS, JS) direkt schreiben |
 | `get-upload-url` | Signierte URL für 15 Minuten, um eine ZIP oder Binärdatei mit `curl` hochzuladen |
+| `list-visits` | Ob und wann der Kunde eine Site oder ein Projekt geöffnet hat, siehe [Aufrufe](/de/visits) |
 | `delete-file`, `clear-files`, `delete-site` | Destruktiv, ohne Rückgängig |
 
 Für eine neue Version eines Entwurfs laden Agenten mit `replace` hoch: Die Live-Site wechselt in einem Schritt und ist zwischendurch nie leer. Ein fehlgeschlagener Upload ändert nichts. Sollen Versionen für den Kunden nebeneinander stehen, legen Agenten jede Version als eigene Site in einem [Projekt](/de/projects) an.

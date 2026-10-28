@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Site;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 
 class SiteController extends Controller
@@ -14,7 +13,7 @@ class SiteController extends Controller
     public function index()
     {
         return Inertia::render('sites/index', [
-            'sites' => Site::latest('updated_at')->get()->map->adminCard(),
+            'sites' => Site::withVisitStats()->latest('updated_at')->get()->map->adminCard(),
             // targets for the sidebar and the move menu on each card
             'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
@@ -24,43 +23,23 @@ class SiteController extends Controller
     {
         return Inertia::render('sites/show', [
             'site' => [...$site->adminCard(), 'files' => $site->fileList()],
+            'visits' => $site->visits()->latest()->limit(100)->get()->map->summary(),
+            'visit_days' => config('prevju.visits_retention_days'),
             'projects' => Project::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'password' => 'nullable|string|max:255',
-            'project_id' => 'nullable|integer|exists:projects,id',
-        ]);
-        $site = Site::create([...$data, 'password' => filled($data['password'] ?? null) ? Hash::make($data['password']) : null]);
+        $site = (new Site)->applySettings($request->validate(Site::rules(creating: true)));
+        $site->save();
 
         return redirect()->route('sites.show', $site);
     }
 
     public function update(Request $request, Site $site)
     {
-        $data = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'password' => 'nullable|string|max:255',
-            'clear_password' => 'boolean',
-            'project_id' => 'sometimes|nullable|integer|exists:projects,id',
-        ]);
-
-        if (isset($data['name'])) {
-            $site->name = $data['name'];
-        }
-        if (filled($data['password'] ?? null)) {
-            $site->password = Hash::make($data['password']);
-        } elseif ($data['clear_password'] ?? false) {
-            $site->password = null;
-        }
-        if (array_key_exists('project_id', $data)) {
-            $site->project_id = $data['project_id'];
-        }
-        $site->save();
+        $site->applySettings($request->validate(Site::rules()))->save();
 
         return back();
     }
